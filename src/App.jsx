@@ -9,6 +9,7 @@ import Knockout from './pages/Knockout';
 import Matches from './pages/Matches';
 import MyBracket from './pages/MyBracket';
 import Leaderboard from './pages/Leaderboard';
+import Venues from './pages/Venues';
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
               <Route path="/matches" element={<Matches />} />
               <Route path="/my-bracket" element={<MyBracket />} />
               <Route path="/leaderboard" element={<Leaderboard />} />
+              <Route path="/venues" element={<Venues />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </div>
