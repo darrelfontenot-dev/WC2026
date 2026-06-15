@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
-import { fetchESPNData, fetchApiFootballData, bucketGroupMatches } from '../api/football';
+import { fetchESPNData, bucketGroupMatches } from '../api/football';
 import { GROUPS, NAMES } from '../data/constants';
 
 const DataContext = createContext();
@@ -10,7 +10,6 @@ export function DataProvider({ children }) {
   const [matchesByGroup, setMatchesByGroup] = useState({});
   const [lastUpdate, setLastUpdate] = useState(null);
   const [statusText, setStatusText] = useState('Initializing...');
-  const [apiKey, setApiKey] = useState(localStorage.getItem('wc2026_apikey') || '');
 
   const initEmpty = useCallback(() => {
     const emptyStandings = {};
@@ -25,22 +24,11 @@ export function DataProvider({ children }) {
     let ok = false;
     let data = null;
 
-    if (apiKey) {
-      try {
-        data = await fetchApiFootballData(apiKey);
-        ok = true;
-      } catch (e) {
-        console.warn('API-Football error:', e);
-      }
-    }
-
-    if (!ok) {
-      try {
-        data = await fetchESPNData();
-        ok = true;
-      } catch (e) {
-        console.warn('ESPN error:', e);
-      }
+    try {
+      data = await fetchESPNData();
+      ok = true;
+    } catch (e) {
+      console.warn('ESPN error:', e);
     }
 
     if (ok && data) {
@@ -57,7 +45,7 @@ export function DataProvider({ children }) {
       setStatusText('Could not reach any data source');
       initEmpty();
     }
-  }, [apiKey, initEmpty]);
+  }, [initEmpty]);
 
   useEffect(() => {
     initEmpty();
@@ -67,7 +55,7 @@ export function DataProvider({ children }) {
   }, [fetchAllData, initEmpty]);
 
   return (
-    <DataContext.Provider value={{ standings, allFixtures, matchesByGroup, lastUpdate, statusText, fetchAllData, apiKey, setApiKey }}>
+    <DataContext.Provider value={{ standings, allFixtures, matchesByGroup, lastUpdate, statusText, fetchAllData }}>
       {children}
     </DataContext.Provider>
   );
