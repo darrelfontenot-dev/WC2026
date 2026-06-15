@@ -12,7 +12,8 @@ export default function Leaderboard() {
       // In a real app with RLS, we'd have an RPC or a view to compute this,
       // but for this MVP, we fetch brackets and profiles (if public)
       try {
-        const { data: bracketsData } = await supabase.from('brackets').select('*, profiles(username)');
+        const { data: bracketsData, error } = await supabase.from('brackets').select('*, profiles(username)');
+        if (error) console.error('Leaderboard query error:', error);
         if (bracketsData) {
           setUsers(bracketsData);
         }
