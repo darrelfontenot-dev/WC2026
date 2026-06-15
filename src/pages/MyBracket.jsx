@@ -234,7 +234,7 @@ export default function MyBracket() {
 
   const isStage1Done = true;
   const isStage2Done = bestThirds.length === 8;
-  const totalKnockoutMatches = KO.flatMap(r => r.matches).length;
+  const totalKnockoutMatches = [...KO.left_r32, ...KO.left_r16, ...KO.left_qf, ...KO.left_sf, ...KO.right_r32, ...KO.right_r16, ...KO.right_qf, ...KO.right_sf, KO.final, KO.third].length;
   const isKnockoutDone = Object.keys(knockoutPicks).length >= totalKnockoutMatches;
   const isFinalScoreDone = finalScore.home !== '' && finalScore.home !== null && finalScore.away !== '' && finalScore.away !== null;
   const isBracketComplete = isStage1Done && isStage2Done && isKnockoutDone && isFinalScoreDone;
