@@ -62,7 +62,7 @@ export async function fetchESPNData() {
       let status;
       if (st.includes('FULL_TIME') || st.includes('FINAL')) status = 'FT';
       else if (st.includes('HALFTIME') || st.includes('HALF_TIME')) status = 'HT';
-      else if (st.includes('PROGRESS')) status = clock ? `${clock}'` : 'LIVE';
+      else if (st.includes('PROGRESS') || st.includes('FIRST_HALF') || st.includes('SECOND_HALF') || st.includes('EXTRA_TIME') || st.includes('SHOOTOUT') || ev.status?.type?.state === 'in') status = clock ? `${clock}'` : 'LIVE';
       else status = 'NS';
       return {
         home: h?.team?.abbreviation || '', away: a?.team?.abbreviation || '',
