@@ -196,6 +196,7 @@ export default function MyBracket() {
 
   const handleSubmit = async () => {
     if (!user || submitted) return;
+    if (!isBracketComplete) return alert('Please complete all steps including the final score before submitting.');
     const confirmed = window.confirm('Are you sure you want to submit your bracket? Once submitted, you will not be able to make changes.');
     if (!confirmed) return;
     setSaving(true);
@@ -233,8 +234,9 @@ export default function MyBracket() {
 
   const isStage1Done = true;
   const isStage2Done = bestThirds.length === 8;
-  const isKnockoutDone = Object.keys(knockoutPicks).length > 0;
-  const isFinalScoreDone = finalScore.home !== '' && finalScore.away !== '';
+  const totalKnockoutMatches = KO.flatMap(r => r.matches).length;
+  const isKnockoutDone = Object.keys(knockoutPicks).length >= totalKnockoutMatches;
+  const isFinalScoreDone = finalScore.home !== '' && finalScore.home !== null && finalScore.away !== '' && finalScore.away !== null;
   const isBracketComplete = isStage1Done && isStage2Done && isKnockoutDone && isFinalScoreDone;
 
   return (
