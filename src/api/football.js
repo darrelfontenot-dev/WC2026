@@ -25,11 +25,34 @@ export async function fetchESPNData() {
     }
   }
 
-  // Scoreboard
-  const mr = await fetch('https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard');
-  if (mr.ok) {
-    const md = await mr.json();
-    allFixtures = (md.events || []).map(ev => {
+  // Scoreboard — fetch a date range to catch all matches including live ones
+  const today = new Date();
+  const dates = [];
+  for (let offset = -1; offset <= 1; offset++) {
+    const d = new Date(today);
+    d.setDate(d.getDate() + offset);
+    dates.push(d.toISOString().slice(0, 10).replace(/-/g, ''));
+  }
+  const allEvents = [];
+  for (const dt of dates) {
+    try {
+      const mr = await fetch(`https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard?dates=${dt}`);
+      if (mr.ok) {
+        const md = await mr.json();
+        (md.events || []).forEach(ev => allEvents.push(ev));
+      }
+    } catch (e) {
+      console.warn(`Scoreboard fetch failed for ${dt}:`, e);
+    }
+  }
+  // Deduplicate events by id
+  const seen = new Set();
+  const uniqueEvents = allEvents.filter(ev => {
+    if (seen.has(ev.id)) return false;
+    seen.add(ev.id);
+    return true;
+  });
+  allFixtures = uniqueEvents.map(ev => {
       const c = ev.competitions?.[0];
       const h = c?.competitors?.find(x => x.homeAway === 'home');
       const a = c?.competitors?.find(x => x.homeAway === 'away');
