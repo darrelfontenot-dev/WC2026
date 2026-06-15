@@ -14,14 +14,28 @@ export default function MyBracket() {
   const [saving, setSaving] = useState(false);
   const [savedMessage, setSavedMessage] = useState('');
 
+  // Migrate old team codes to corrected ones
+  const CODE_MIGRATIONS = { SLO:'SUI', BHR:'BIH', PHI:'IRN', DEN:'SEN', CMR:'CRO', OMA:'GHA' };
+  const migrateCode = (code) => CODE_MIGRATIONS[code] || code;
+  const migrateGroupPicks = (picks) => {
+    const migrated = {};
+    Object.keys(GROUPS).forEach(g => {
+      migrated[g] = picks[g] ? picks[g].map(migrateCode) : GROUPS[g];
+    });
+    return migrated;
+  };
+
   // Load existing bracket
   useEffect(() => {
     if (user) {
       supabase.from('brackets').select('*').eq('user_id', user.id).single().then(({ data }) => {
         if (data && data.bracket_data) {
-          setGroupPicks(data.bracket_data.groupPicks || GROUPS);
-          setThirds(data.bracket_data.bestThirds || []);
-          setKnockoutPicks(data.bracket_data.knockoutPicks || {});
+          setGroupPicks(migrateGroupPicks(data.bracket_data.groupPicks || GROUPS));
+          setThirds((data.bracket_data.bestThirds || []).map(migrateCode));
+          const ko = data.bracket_data.knockoutPicks || {};
+          const migratedKo = {};
+          Object.keys(ko).forEach(k => { migratedKo[k] = migrateCode(ko[k]); });
+          setKnockoutPicks(migratedKo);
           setFinalScore({ home: data.final_score_home ?? '', away: data.final_score_away ?? '' });
         }
       });
