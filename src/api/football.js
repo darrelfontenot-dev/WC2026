@@ -34,10 +34,17 @@ export async function fetchESPNData() {
       const h = c?.competitors?.find(x => x.homeAway === 'home');
       const a = c?.competitors?.find(x => x.homeAway === 'away');
       const st = ev.status?.type?.name || '';
+      const clock = ev.status?.displayClock || '';
+      const period = ev.status?.period || 0;
+      let status;
+      if (st.includes('FULL_TIME') || st.includes('FINAL')) status = 'FT';
+      else if (st.includes('HALFTIME') || st.includes('HALF_TIME')) status = 'HT';
+      else if (st.includes('PROGRESS')) status = clock ? `${clock}'` : 'LIVE';
+      else status = 'NS';
       return {
         home: h?.team?.abbreviation || '', away: a?.team?.abbreviation || '',
         hs: parseInt(h?.score) || 0, as: parseInt(a?.score) || 0,
-        status: st.includes('FULL_TIME') ? 'FT' : st.includes('PROGRESS') ? 'LIVE' : st.includes('HALF') ? 'HT' : 'NS',
+        status,
         date: ev.date || '', round: ev.season?.type?.abbreviation || '',
         venue: c?.venue?.fullName || ''
       };

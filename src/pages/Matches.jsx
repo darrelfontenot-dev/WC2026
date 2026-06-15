@@ -39,7 +39,7 @@ export default function Matches() {
         <h3 style={{marginBottom: 12, fontSize: '1.2rem'}}>All Matches</h3>
         {sortedMatches.map((m, i) => {
           const played = ['FT','AET','PEN'].includes(m.status);
-          const live = ['LIVE','1H','2H','HT'].includes(m.status);
+          const live = ['LIVE','1H','2H','HT'].includes(m.status) || m.status.includes("'");
           const dt = m.date ? new Date(m.date).toLocaleDateString('en-US',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}) : '';
           const sc = played || live ? `${m.hs ?? 0} – ${m.as ?? 0}` : 'vs';
 

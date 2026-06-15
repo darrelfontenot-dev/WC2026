@@ -47,14 +47,14 @@ export default function Groups() {
                   <h4>Matches</h4>
                   {matches.map((m, i) => {
                     const played = m.status === 'FT' || m.status === 'AET' || m.status === 'PEN';
-                    const live = m.status === 'LIVE' || m.status === '1H' || m.status === '2H' || m.status === 'HT';
+                    const live = m.status === 'LIVE' || m.status === '1H' || m.status === '2H' || m.status === 'HT' || m.status.includes("'");
                     const sc = played || live ? `${m.hs ?? 0} – ${m.as ?? 0}` : 'vs';
                     return (
                       <div key={i} className="group-match">
                         <span className="gm-team right">{FLAGS[m.home]||''} {m.home}</span>
                         <span className={`gm-score ${!played && !live ? 'pending' : ''}`}>{sc}</span>
                         <span className="gm-team">{m.away} {FLAGS[m.away]||''}</span>
-                        {live && <span className="gm-status">● LIVE</span>}
+                        {live && <span className="gm-status">● {m.status === 'LIVE' ? 'LIVE' : m.status}</span>}
                         {played && <span className="gm-status" style={{color:'#888'}}>{m.status}</span>}
                       </div>
                     );
