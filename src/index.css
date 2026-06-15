@@ -15,6 +15,8 @@
 [data-theme="dark"] {
   --navy: #e8ecf1;
   --navy-light: #d0d5dd;
+  --navy-bg: #1a2744;
+  --navy-bg-light: #2a3a5c;
   --gold: #f0c060;
   --bg: #0d1117;
   --card: #161b22;
@@ -22,6 +24,21 @@
   --shadow: 0 2px 8px rgba(0,0,0,0.4);
   --shadow-lg: 0 4px 16px rgba(0,0,0,0.5);
 }
+
+/* Dark mode: fix elements that use navy as background with white text */
+[data-theme="dark"] .group-header { background: linear-gradient(135deg, #1a2744 0%, #2a3a5c 100%); }
+[data-theme="dark"] .tab.active { background: linear-gradient(135deg, #1a2744 0%, #2a3a5c 100%); border-color: #1a2744; }
+[data-theme="dark"] .refresh-btn { background: linear-gradient(135deg, #1a2744 0%, #2a3a5c 100%); }
+[data-theme="dark"] .btn-primary { background: linear-gradient(135deg, #1a2744 0%, #2a3a5c 100%); }
+[data-theme="dark"] .gm-score { background: #1a2744; }
+[data-theme="dark"] .wizard-btn.active { background: #1a2744; color: #fff; border-color: #1a2744; }
+[data-theme="dark"] .rank-badge { background: #30363d; color: #e8ecf1; }
+[data-theme="dark"] .champion-banner { color: #1a2744; }
+[data-theme="dark"] .subtitle { color: #8b949e; }
+[data-theme="dark"] .status-bar { color: #8b949e; }
+[data-theme="dark"] .form-group label { color: #e8ecf1; }
+[data-theme="dark"] .auth-switch { color: #8b949e; }
+[data-theme="dark"] .predictor-team { color: #e8ecf1; }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--navy); transition: var(--transition); line-height: 1.5; }
