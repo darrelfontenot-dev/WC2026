@@ -172,6 +172,30 @@ export default function MyBracket() {
   const handleSave = async () => {
     if (!user) return alert('Please login to save your bracket.');
     if (submitted) return;
+    setSaving(true);
+    try {
+      const bracket_data = { groupPicks, bestThirds, knockoutPicks };
+      const { error } = await supabase.from('brackets').upsert({
+        user_id: user.id,
+        bracket_data,
+        final_score_home: parseInt(finalScore.home) || 0,
+        final_score_away: parseInt(finalScore.away) || 0,
+        submitted: false,
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'user_id' });
+      
+      if (error) throw error;
+      setSavedMessage('Bracket saved! You can still make changes.');
+      setTimeout(() => setSavedMessage(''), 3000);
+    } catch (err) {
+      alert('Error saving bracket: ' + err.message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (!user || submitted) return;
     const confirmed = window.confirm('Are you sure you want to submit your bracket? Once submitted, you will not be able to make changes.');
     if (!confirmed) return;
     setSaving(true);
@@ -191,7 +215,7 @@ export default function MyBracket() {
       setSavedMessage('Bracket submitted successfully!');
       setTimeout(() => setSavedMessage(''), 3000);
     } catch (err) {
-      alert('Error saving bracket: ' + err.message);
+      alert('Error submitting bracket: ' + err.message);
     } finally {
       setSaving(false);
     }
@@ -209,6 +233,9 @@ export default function MyBracket() {
 
   const isStage1Done = true;
   const isStage2Done = bestThirds.length === 8;
+  const isKnockoutDone = Object.keys(knockoutPicks).length > 0;
+  const isFinalScoreDone = finalScore.home !== '' && finalScore.away !== '';
+  const isBracketComplete = isStage1Done && isStage2Done && isKnockoutDone && isFinalScoreDone;
 
   return (
     <div className="panel active" style={{padding: '0 20px 40px'}}>
@@ -218,10 +245,17 @@ export default function MyBracket() {
         <button className={`wizard-btn ${stage===3?'active':''} ${!isStage2Done?'locked':''}`} onClick={()=>isStage2Done && setStage(3)}>3. Knockout</button>
         <button className={`wizard-btn ${stage===4?'active':''} ${!isStage2Done?'locked':''}`} onClick={()=>isStage2Done && setStage(4)}>4. Final Score</button>
         
-        <button className="wizard-btn" onClick={handleSave} disabled={submitted || saving} style={{marginLeft:'auto', background: submitted ? '#888' : 'var(--green)', color:'white', borderColor: submitted ? '#888' : 'var(--green)', cursor: submitted ? 'not-allowed' : 'pointer'}}>
-          {submitted ? <><Lock size={14}/> Submitted</> : saving ? 'Submitting...' : <><Save size={14}/> Submit Bracket</>}
+        <button className="wizard-btn" onClick={handleSave} disabled={submitted || saving} style={{marginLeft:'auto', background: submitted ? '#888' : 'var(--navy)', color:'white', borderColor: submitted ? '#888' : 'var(--navy)', cursor: submitted ? 'not-allowed' : 'pointer'}}>
+          {submitted ? <><Lock size={14}/> Locked</> : saving ? 'Saving...' : <><Save size={14}/> Save</>}
         </button>
+        {isBracketComplete && !submitted && (
+          <button className="wizard-btn" onClick={handleSubmit} disabled={saving} style={{background:'var(--green)', color:'white', borderColor:'var(--green)'}}>
+            <Check size={14}/> Submit Bracket
+          </button>
+        )}
       </div>
+      
+      {submitted && <div style={{textAlign:'center', color:'var(--green)', fontWeight:'bold', marginBottom:16, padding:12, background:'rgba(0,128,0,0.1)', borderRadius:8}}>✅ Your bracket has been submitted and locked.</div>}
       
       {savedMessage && <div style={{textAlign:'center', color:'var(--green)', fontWeight:'bold', marginBottom:16}}>{savedMessage}</div>}
 
