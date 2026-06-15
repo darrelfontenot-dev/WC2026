@@ -25,14 +25,9 @@ export async function fetchESPNData() {
     }
   }
 
-  // Scoreboard — fetch a date range to catch all matches including live ones
+  // Scoreboard — fetch today's matches only
   const today = new Date();
-  const dates = [];
-  for (let offset = -1; offset <= 1; offset++) {
-    const d = new Date(today);
-    d.setDate(d.getDate() + offset);
-    dates.push(d.toISOString().slice(0, 10).replace(/-/g, ''));
-  }
+  const dates = [today.toISOString().slice(0, 10).replace(/-/g, '')];
   const allEvents = [];
   for (const dt of dates) {
     try {
