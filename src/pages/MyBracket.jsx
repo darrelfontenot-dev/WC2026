@@ -13,6 +13,7 @@ export default function MyBracket() {
   const [finalScore, setFinalScore] = useState({ home: '', away: '' });
   const [saving, setSaving] = useState(false);
   const [savedMessage, setSavedMessage] = useState('');
+  const [submitted, setSubmitted] = useState(false);
 
   // Migrate old team codes to corrected ones
   const CODE_MIGRATIONS = { SLO:'SUI', BHR:'BIH', PHI:'IRN', DEN:'SEN', CMR:'CRO', OMA:'GHA' };
@@ -37,6 +38,7 @@ export default function MyBracket() {
           Object.keys(ko).forEach(k => { migratedKo[k] = migrateCode(ko[k]); });
           setKnockoutPicks(migratedKo);
           setFinalScore({ home: data.final_score_home ?? '', away: data.final_score_away ?? '' });
+          if (data.submitted) setSubmitted(true);
         }
       });
     }
@@ -169,6 +171,9 @@ export default function MyBracket() {
 
   const handleSave = async () => {
     if (!user) return alert('Please login to save your bracket.');
+    if (submitted) return;
+    const confirmed = window.confirm('Are you sure you want to submit your bracket? Once submitted, you will not be able to make changes.');
+    if (!confirmed) return;
     setSaving(true);
     try {
       const bracket_data = { groupPicks, bestThirds, knockoutPicks };
@@ -177,11 +182,13 @@ export default function MyBracket() {
         bracket_data,
         final_score_home: parseInt(finalScore.home) || 0,
         final_score_away: parseInt(finalScore.away) || 0,
+        submitted: true,
         updated_at: new Date().toISOString()
       }, { onConflict: 'user_id' });
       
       if (error) throw error;
-      setSavedMessage('Bracket saved successfully!');
+      setSubmitted(true);
+      setSavedMessage('Bracket submitted successfully!');
       setTimeout(() => setSavedMessage(''), 3000);
     } catch (err) {
       alert('Error saving bracket: ' + err.message);
@@ -211,8 +218,8 @@ export default function MyBracket() {
         <button className={`wizard-btn ${stage===3?'active':''} ${!isStage2Done?'locked':''}`} onClick={()=>isStage2Done && setStage(3)}>3. Knockout</button>
         <button className={`wizard-btn ${stage===4?'active':''} ${!isStage2Done?'locked':''}`} onClick={()=>isStage2Done && setStage(4)}>4. Final Score</button>
         
-        <button className="wizard-btn" onClick={handleSave} style={{marginLeft:'auto', background:'var(--green)', color:'white', borderColor:'var(--green)'}}>
-          {saving ? 'Saving...' : <><Save size={14}/> Save Bracket</>}
+        <button className="wizard-btn" onClick={handleSave} disabled={submitted || saving} style={{marginLeft:'auto', background: submitted ? '#888' : 'var(--green)', color:'white', borderColor: submitted ? '#888' : 'var(--green)', cursor: submitted ? 'not-allowed' : 'pointer'}}>
+          {submitted ? <><Lock size={14}/> Submitted</> : saving ? 'Submitting...' : <><Save size={14}/> Submit Bracket</>}
         </button>
       </div>
       
