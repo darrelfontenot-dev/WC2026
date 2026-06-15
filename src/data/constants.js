@@ -1,41 +1,41 @@
 export const GROUPS = {
-  A:['MEX','RSA','KOR','CZE'], B:['CAN','SLO','QAT','BHR'],
+  A:['MEX','RSA','KOR','CZE'], B:['CAN','SUI','QAT','BIH'],
   C:['BRA','MAR','SCO','HAI'], D:['USA','PAR','AUS','TUR'],
   E:['GER','CUW','CIV','ECU'], F:['NED','JPN','TUN','SWE'],
-  G:['BEL','EGY','PHI','NZL'], H:['ESP','URU','KSA','CPV'],
-  I:['FRA','DEN','NOR','IRQ'], J:['ARG','AUT','ALG','JOR'],
-  K:['POR','COL','UZB','COD'], L:['ENG','CMR','OMA','PAN']
+  G:['BEL','EGY','IRN','NZL'], H:['ESP','URU','KSA','CPV'],
+  I:['FRA','SEN','NOR','IRQ'], J:['ARG','AUT','ALG','JOR'],
+  K:['POR','COL','UZB','COD'], L:['ENG','CRO','GHA','PAN']
 };
 
 export const FLAGS = {
   MEX:'\u{1F1F2}\u{1F1FD}',RSA:'\u{1F1FF}\u{1F1E6}',KOR:'\u{1F1F0}\u{1F1F7}',CZE:'\u{1F1E8}\u{1F1FF}',
-  CAN:'\u{1F1E8}\u{1F1E6}',SLO:'\u{1F1F8}\u{1F1EE}',QAT:'\u{1F1F6}\u{1F1E6}',BHR:'\u{1F1E7}\u{1F1ED}',
+  CAN:'\u{1F1E8}\u{1F1E6}',SUI:'\u{1F1E8}\u{1F1ED}',QAT:'\u{1F1F6}\u{1F1E6}',BIH:'\u{1F1E7}\u{1F1E6}',
   BRA:'\u{1F1E7}\u{1F1F7}',MAR:'\u{1F1F2}\u{1F1E6}',SCO:'\u{1F3F4}\u{E0067}\u{E0062}\u{E0073}\u{E0063}\u{E0074}\u{E007F}',
   HAI:'\u{1F1ED}\u{1F1F9}',USA:'\u{1F1FA}\u{1F1F8}',PAR:'\u{1F1F5}\u{1F1FE}',AUS:'\u{1F1E6}\u{1F1FA}',
   TUR:'\u{1F1F9}\u{1F1F7}',GER:'\u{1F1E9}\u{1F1EA}',CUW:'\u{1F1E8}\u{1F1FC}',CIV:'\u{1F1E8}\u{1F1EE}',
   ECU:'\u{1F1EA}\u{1F1E8}',NED:'\u{1F1F3}\u{1F1F1}',JPN:'\u{1F1EF}\u{1F1F5}',TUN:'\u{1F1F9}\u{1F1F3}',
-  SWE:'\u{1F1F8}\u{1F1EA}',BEL:'\u{1F1E7}\u{1F1EA}',EGY:'\u{1F1EA}\u{1F1EC}',PHI:'\u{1F1F5}\u{1F1ED}',
+  SWE:'\u{1F1F8}\u{1F1EA}',BEL:'\u{1F1E7}\u{1F1EA}',EGY:'\u{1F1EA}\u{1F1EC}',IRN:'\u{1F1EE}\u{1F1F7}',
   NZL:'\u{1F1F3}\u{1F1FF}',ESP:'\u{1F1EA}\u{1F1F8}',URU:'\u{1F1FA}\u{1F1FE}',KSA:'\u{1F1F8}\u{1F1E6}',
-  CPV:'\u{1F1E8}\u{1F1FB}',FRA:'\u{1F1EB}\u{1F1F7}',DEN:'\u{1F1E9}\u{1F1F0}',NOR:'\u{1F1F3}\u{1F1F4}',
+  CPV:'\u{1F1E8}\u{1F1FB}',FRA:'\u{1F1EB}\u{1F1F7}',SEN:'\u{1F1F8}\u{1F1F3}',NOR:'\u{1F1F3}\u{1F1F4}',
   IRQ:'\u{1F1EE}\u{1F1F6}',ARG:'\u{1F1E6}\u{1F1F7}',AUT:'\u{1F1E6}\u{1F1F9}',ALG:'\u{1F1E9}\u{1F1FF}',
   JOR:'\u{1F1EF}\u{1F1F4}',POR:'\u{1F1F5}\u{1F1F9}',COL:'\u{1F1E8}\u{1F1F4}',UZB:'\u{1F1FA}\u{1F1FF}',
   COD:'\u{1F1E8}\u{1F1E9}',ENG:'\u{1F3F4}\u{E0067}\u{E0062}\u{E0065}\u{E006E}\u{E0067}\u{E007F}',
-  CMR:'\u{1F1E8}\u{1F1F2}',OMA:'\u{1F1F4}\u{1F1F2}',PAN:'\u{1F1F5}\u{1F1E6}'
+  CRO:'\u{1F1ED}\u{1F1F7}',GHA:'\u{1F1EC}\u{1F1ED}',PAN:'\u{1F1F5}\u{1F1E6}'
 };
 
 export const NAMES = {
   MEX:'Mexico',RSA:'South Africa',KOR:'South Korea',CZE:'Czech Republic',
-  CAN:'Canada',SLO:'Slovenia',QAT:'Qatar',BHR:'Bahrain',
+  CAN:'Canada',SUI:'Switzerland',QAT:'Qatar',BIH:'Bosnia and Herzegovina',
   BRA:'Brazil',MAR:'Morocco',SCO:'Scotland',HAI:'Haiti',
   USA:'United States',PAR:'Paraguay',AUS:'Australia',TUR:'Turkey',
   GER:'Germany',CUW:'Curaçao',CIV:"Côte d'Ivoire",ECU:'Ecuador',
   NED:'Netherlands',JPN:'Japan',TUN:'Tunisia',SWE:'Sweden',
-  BEL:'Belgium',EGY:'Egypt',PHI:'Philippines',NZL:'New Zealand',
+  BEL:'Belgium',EGY:'Egypt',IRN:'Iran',NZL:'New Zealand',
   ESP:'Spain',URU:'Uruguay',KSA:'Saudi Arabia',CPV:'Cape Verde',
-  FRA:'France',DEN:'Denmark',NOR:'Norway',IRQ:'Iraq',
+  FRA:'France',SEN:'Senegal',NOR:'Norway',IRQ:'Iraq',
   ARG:'Argentina',AUT:'Austria',ALG:'Algeria',JOR:'Jordan',
   POR:'Portugal',COL:'Colombia',UZB:'Uzbekistan',COD:'DR Congo',
-  ENG:'England',CMR:'Cameroon',OMA:'Oman',PAN:'Panama'
+  ENG:'England',CRO:'Croatia',GHA:'Ghana',PAN:'Panama'
 };
 
 export const KO = {
