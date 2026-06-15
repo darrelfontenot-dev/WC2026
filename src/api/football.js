@@ -72,7 +72,6 @@ export async function fetchESPNData() {
         venue: c?.venue?.fullName || ''
       };
     });
-  }
 
   return { standings, allFixtures };
 }
