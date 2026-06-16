@@ -7,7 +7,32 @@ export default function Matches() {
   const [search, setSearch] = useState('');
 
   const sortedMatches = useMemo(() => {
-    let sorted = [...allFixtures].sort((a,b) => new Date(a.date)-new Date(b.date));
+    const now = new Date();
+    const todayStr = now.toDateString();
+    let sorted = [...allFixtures].sort((a,b) => {
+      const da = new Date(a.date);
+      const db = new Date(b.date);
+      const aPlayed = ['FT','AET','PEN'].includes(a.status);
+      const bPlayed = ['FT','AET','PEN'].includes(b.status);
+      const aToday = da.toDateString() === todayStr;
+      const bToday = db.toDateString() === todayStr;
+      const aLive = ['LIVE','1H','2H','HT'].includes(a.status) || (a.status && a.status.includes("'"));
+      const bLive = ['LIVE','1H','2H','HT'].includes(b.status) || (b.status && b.status.includes("'"));
+      // Live matches first
+      if (aLive && !bLive) return -1;
+      if (!aLive && bLive) return 1;
+      // Today's unplayed matches next
+      if (aToday && !aPlayed && !(bToday && !bPlayed)) return -1;
+      if (bToday && !bPlayed && !(aToday && !aPlayed)) return 1;
+      // Future matches next (ascending by date)
+      const aFuture = !aPlayed && !aLive;
+      const bFuture = !bPlayed && !bLive;
+      if (aFuture && !bFuture) return -1;
+      if (!aFuture && bFuture) return 1;
+      if (aFuture && bFuture) return da - db;
+      // Played matches last (most recent first)
+      return db - da;
+    });
     if (search) {
       const lower = search.toLowerCase();
       sorted = sorted.filter(m => 
