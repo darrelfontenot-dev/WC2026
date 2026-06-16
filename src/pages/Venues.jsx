@@ -2,24 +2,116 @@ import React, { useState, useMemo } from 'react';
 import { useData } from '../context/DataContext';
 import { KO, FLAGS, NAMES } from '../data/constants';
 
+/* ── venue map ─────────────────────────────────────────────── */
 const VENUE_CITIES = {
-  'East Rutherford': 'MetLife Stadium',
-  'Inglewood': 'SoFi Stadium',
-  'Arlington': 'AT&T Stadium',
-  'Houston': 'NRG Stadium',
-  'Atlanta': 'Mercedes-Benz Stadium',
-  'Philadelphia': 'Lincoln Financial Field',
-  'Miami': 'Hard Rock Stadium',
-  'Seattle': 'Lumen Field',
-  'Santa Clara': 'Levi\'s Stadium',
-  'Foxborough': 'Gillette Stadium',
-  'Kansas City': 'Arrowhead Stadium',
-  'Toronto': 'BMO Field',
-  'Vancouver': 'BC Place',
-  'Mexico City': 'Estadio Azteca',
-  'Guadalupe': 'Estadio BBVA',
+  'Arlington':        'AT&T Stadium',
+  'Atlanta':          'Mercedes-Benz Stadium',
+  'East Rutherford':  'MetLife Stadium',
+  'Foxborough':       'Gillette Stadium',
+  'Guadalajara':      'Estadio Akron',
+  'Guadalupe':        'Estadio BBVA',
+  'Houston':          'NRG Stadium',
+  'Inglewood':        'SoFi Stadium',
+  'Kansas City':      'Arrowhead Stadium',
+  'Mexico City':      'Estadio Azteca',
+  'Miami':            'Hard Rock Stadium',
+  'Philadelphia':     'Lincoln Financial Field',
+  'Santa Clara':      "Levi's Stadium",
+  'Seattle':          'Lumen Field',
+  'Toronto':          'BMO Field',
+  'Vancouver':        'BC Place',
 };
 
+/* ── complete group-stage schedule (all 72 matches, times in CDT) ── */
+// Each entry: [date, timeCDT, homeCode, awayCode, city]
+const GROUP_SCHEDULE = [
+  // ─── Group A ───
+  ['Jun 11','2:00 PM','MEX','RSA','Mexico City'],
+  ['Jun 11','9:00 PM','KOR','CZE','Guadalajara'],
+  ['Jun 18','11:00 AM','CZE','RSA','Atlanta'],
+  ['Jun 18','8:00 PM','MEX','KOR','Guadalajara'],
+  ['Jun 24','8:00 PM','CZE','MEX','Mexico City'],
+  ['Jun 24','8:00 PM','RSA','KOR','Guadalupe'],
+  // ─── Group B ───
+  ['Jun 12','2:00 PM','CAN','BIH','Toronto'],
+  ['Jun 13','2:00 PM','QAT','SUI','Santa Clara'],
+  ['Jun 18','2:00 PM','SUI','BIH','Inglewood'],
+  ['Jun 18','5:00 PM','CAN','QAT','Vancouver'],
+  ['Jun 24','2:00 PM','SUI','CAN','Vancouver'],
+  ['Jun 24','2:00 PM','BIH','QAT','Seattle'],
+  // ─── Group C ───
+  ['Jun 13','5:00 PM','BRA','MAR','East Rutherford'],
+  ['Jun 13','8:00 PM','HAI','SCO','Foxborough'],
+  ['Jun 19','5:00 PM','SCO','MAR','Foxborough'],
+  ['Jun 19','7:30 PM','BRA','HAI','Philadelphia'],
+  ['Jun 24','5:00 PM','SCO','BRA','Miami'],
+  ['Jun 24','5:00 PM','MAR','HAI','Atlanta'],
+  // ─── Group D ───
+  ['Jun 12','8:00 PM','USA','PAR','Inglewood'],
+  ['Jun 13','11:00 PM','AUS','TUR','Vancouver'],
+  ['Jun 19','2:00 PM','USA','AUS','Seattle'],
+  ['Jun 19','10:00 PM','TUR','PAR','Santa Clara'],
+  ['Jun 25','9:00 PM','TUR','USA','Inglewood'],
+  ['Jun 25','9:00 PM','PAR','AUS','Santa Clara'],
+  // ─── Group E ───
+  ['Jun 14','12:00 PM','GER','CUW','Houston'],
+  ['Jun 14','6:00 PM','CIV','ECU','Philadelphia'],
+  ['Jun 20','3:00 PM','GER','CIV','Toronto'],
+  ['Jun 20','7:00 PM','ECU','CUW','Kansas City'],
+  ['Jun 25','3:00 PM','CUW','CIV','Philadelphia'],
+  ['Jun 25','3:00 PM','ECU','GER','East Rutherford'],
+  // ─── Group F ───
+  ['Jun 14','3:00 PM','NED','JPN','Arlington'],
+  ['Jun 14','9:00 PM','SWE','TUN','Guadalupe'],
+  ['Jun 20','12:00 PM','NED','SWE','Houston'],
+  ['Jun 20','11:00 PM','TUN','JPN','Guadalupe'],
+  ['Jun 25','6:00 PM','JPN','SWE','Arlington'],
+  ['Jun 25','6:00 PM','TUN','NED','Kansas City'],
+  // ─── Group G ───
+  ['Jun 15','2:00 PM','BEL','EGY','Seattle'],
+  ['Jun 15','8:00 PM','IRN','NZL','Inglewood'],
+  ['Jun 21','2:00 PM','BEL','IRN','Inglewood'],
+  ['Jun 21','8:00 PM','NZL','EGY','Vancouver'],
+  ['Jun 26','10:00 PM','EGY','IRN','Seattle'],
+  ['Jun 26','10:00 PM','NZL','BEL','Vancouver'],
+  // ─── Group H ───
+  ['Jun 15','11:00 AM','ESP','CPV','Atlanta'],
+  ['Jun 15','5:00 PM','KSA','URU','Miami'],
+  ['Jun 21','11:00 AM','ESP','KSA','Atlanta'],
+  ['Jun 21','5:00 PM','URU','CPV','Miami'],
+  ['Jun 26','7:00 PM','CPV','KSA','Houston'],
+  ['Jun 26','7:00 PM','URU','ESP','Guadalajara'],
+  // ─── Group I ───
+  ['Jun 16','2:00 PM','FRA','SEN','East Rutherford'],
+  ['Jun 16','5:00 PM','IRQ','NOR','Foxborough'],
+  ['Jun 22','4:00 PM','FRA','IRQ','Philadelphia'],
+  ['Jun 22','7:00 PM','NOR','SEN','East Rutherford'],
+  ['Jun 26','2:00 PM','NOR','FRA','Foxborough'],
+  ['Jun 26','2:00 PM','SEN','IRQ','Toronto'],
+  // ─── Group J ───
+  ['Jun 16','8:00 PM','ARG','ALG','Kansas City'],
+  ['Jun 16','11:00 PM','AUT','JOR','Santa Clara'],
+  ['Jun 22','12:00 PM','ARG','AUT','Arlington'],
+  ['Jun 22','10:00 PM','JOR','ALG','Santa Clara'],
+  ['Jun 27','9:00 PM','ALG','AUT','Kansas City'],
+  ['Jun 27','9:00 PM','JOR','ARG','Arlington'],
+  // ─── Group K ───
+  ['Jun 17','12:00 PM','POR','COD','Houston'],
+  ['Jun 17','9:00 PM','UZB','COL','Mexico City'],
+  ['Jun 23','12:00 PM','POR','UZB','Houston'],
+  ['Jun 23','9:00 PM','COL','COD','Guadalajara'],
+  ['Jun 27','6:30 PM','COL','POR','Miami'],
+  ['Jun 27','6:30 PM','COD','UZB','Atlanta'],
+  // ─── Group L ───
+  ['Jun 17','3:00 PM','ENG','CRO','Arlington'],
+  ['Jun 17','6:00 PM','GHA','PAN','Toronto'],
+  ['Jun 23','3:00 PM','ENG','GHA','Foxborough'],
+  ['Jun 23','6:00 PM','PAN','CRO','Toronto'],
+  ['Jun 27','4:00 PM','PAN','ENG','East Rutherford'],
+  ['Jun 27','4:00 PM','CRO','GHA','Philadelphia'],
+];
+
+/* ── helpers ───────────────────────────────────────────────── */
 function resolveLabel(code, standings) {
   if (NAMES[code]) return NAMES[code];
   const posMatch = code.match(/^(\d)([A-L])$/);
@@ -60,15 +152,7 @@ function parseKOSchedule() {
   }).filter(Boolean);
 }
 
-function formatCDT(dateStr) {
-  if (!dateStr) return { date: '', time: '' };
-  const d = new Date(dateStr);
-  return {
-    date: d.toLocaleDateString('en-US', { timeZone: 'America/Chicago', month: 'short', day: 'numeric' }),
-    time: d.toLocaleTimeString('en-US', { timeZone: 'America/Chicago', hour: 'numeric', minute: '2-digit', hour12: true }) + ' CDT',
-  };
-}
-
+/* ── component ─────────────────────────────────────────────── */
 export default function Venues() {
   const { allFixtures, standings } = useData();
   const [selectedCity, setSelectedCity] = useState('');
@@ -76,83 +160,59 @@ export default function Venues() {
   const cities = Object.keys(VENUE_CITIES).sort();
   const koSchedule = useMemo(() => parseKOSchedule(), []);
 
-  // Map city names to aliases for matching ESPN venueCity field
-  const CITY_ALIASES = {
-    'East Rutherford': ['east rutherford', 'rutherford', 'metlife'],
-    'Inglewood': ['inglewood', 'sofi'],
-    'Arlington': ['arlington', 'at&t stadium'],
-    'Houston': ['houston', 'nrg'],
-    'Atlanta': ['atlanta', 'mercedes-benz'],
-    'Philadelphia': ['philadelphia', 'lincoln financial'],
-    'Miami': ['miami', 'miami gardens', 'hard rock'],
-    'Seattle': ['seattle', 'lumen'],
-    'Santa Clara': ['santa clara', 'levi'],
-    'Foxborough': ['foxborough', 'foxboro', 'gillette'],
-    'Kansas City': ['kansas city', 'arrowhead'],
-    'Toronto': ['toronto', 'bmo field'],
-    'Vancouver': ['vancouver', 'bc place'],
-    'Mexico City': ['mexico city', 'ciudad de mexico', 'azteca'],
-    'Guadalupe': ['guadalupe', 'monterrey', 'bbva'],
-  };
-
-  const fixturesByCity = useMemo(() => {
+  // Build a lookup from "HOME-AWAY" to ESPN fixture for live scores
+  const espnLookup = useMemo(() => {
     const map = {};
     for (const f of allFixtures) {
-      const venueLower = (f.venue || '').toLowerCase();
-      const cityLower = (f.venueCity || '').toLowerCase();
-      const haystack = venueLower + ' ' + cityLower;
-      for (const city of cities) {
-        const aliases = CITY_ALIASES[city] || [city.toLowerCase()];
-        if (aliases.some(a => haystack.includes(a))) {
-          if (!map[city]) map[city] = [];
-          map[city].push(f);
-        }
-      }
+      if (f.home && f.away) map[`${f.home}-${f.away}`] = f;
     }
     return map;
-  }, [allFixtures, cities]);
+  }, [allFixtures]);
 
   const cityMatches = useMemo(() => {
     if (!selectedCity) return [];
     const rows = [];
-    const seenKeys = new Set();
 
-    // ESPN fixtures (includes already-played matches)
-    for (const f of (fixturesByCity[selectedCity] || [])) {
-      const played = ['FT', 'AET', 'PEN'].includes(f.status);
-      const isLive = f.status.includes("'") || ['LIVE', '1H', '2H', 'HT'].includes(f.status);
-      const { date, time } = formatCDT(f.date);
-      seenKeys.add(`${f.home}-${f.away}`);
+    // Group stage matches from static schedule
+    for (const [dateStr, timeStr, home, away, city] of GROUP_SCHEDULE) {
+      if (city !== selectedCity) continue;
+      const espn = espnLookup[`${home}-${away}`];
+      const played = espn && ['FT', 'AET', 'PEN'].includes(espn.status);
+      const isLive = espn && (espn.status.includes("'") || ['LIVE', '1H', '2H', 'HT'].includes(espn.status));
+      const sortDate = new Date(`${dateStr} 2026 ${timeStr}`);
       rows.push({
-        dateStr: date, timeStr: time,
-        homeCode: f.home, awayCode: f.away,
-        homeName: NAMES[f.home] || f.home, awayName: NAMES[f.away] || f.away,
-        score: played || isLive ? `${f.hs} – ${f.as}` : null,
-        status: f.status === 'NS' ? 'Scheduled' : f.status,
-        isLive, played,
-        sortKey: f.date ? new Date(f.date).getTime() : 0,
+        dateStr, timeStr: `${timeStr} CDT`,
+        homeCode: home, awayCode: away,
+        homeName: NAMES[home] || home, awayName: NAMES[away] || away,
+        score: (played || isLive) ? `${espn.hs} – ${espn.as}` : null,
+        status: !espn ? 'Scheduled' : espn.status === 'NS' ? 'Scheduled' : espn.status,
+        isLive: !!isLive, played: !!played,
+        sortKey: isNaN(sortDate.getTime()) ? 0 : sortDate.getTime(),
       });
     }
 
-    // Future KO matches not yet in ESPN data
+    // Knockout matches from KO constants
     for (const ko of koSchedule.filter(m => m.city === selectedCity)) {
       const hc = resolveCode(ko.home, standings);
       const ac = resolveCode(ko.away, standings);
-      if (seenKeys.has(`${hc}-${ac}`)) continue;
-      // Parse "Jun 29" / "Jul 2" into a sortable timestamp
+      const espn = espnLookup[`${hc}-${ac}`];
+      const played = espn && ['FT', 'AET', 'PEN'].includes(espn.status);
+      const isLive = espn && (espn.status.includes("'") || ['LIVE', '1H', '2H', 'HT'].includes(espn.status));
       const koDate = new Date(`${ko.dateStr} 2026 ${ko.timeStr}`);
       rows.push({
         dateStr: ko.dateStr, timeStr: `${ko.timeStr} CDT`,
         homeCode: hc, awayCode: ac,
         homeName: resolveLabel(ko.home, standings), awayName: resolveLabel(ko.away, standings),
-        score: null, status: 'Scheduled', isLive: false, played: false,
+        score: (played || isLive) ? `${espn.hs} – ${espn.as}` : null,
+        status: !espn ? 'Scheduled' : espn.status === 'NS' ? 'Scheduled' : espn.status,
+        isLive: !!isLive, played: !!played,
         sortKey: isNaN(koDate.getTime()) ? 9999999999999 : koDate.getTime(),
       });
     }
 
     rows.sort((a, b) => a.sortKey - b.sortKey);
     return rows;
-  }, [selectedCity, koSchedule, fixturesByCity, standings]);
+  }, [selectedCity, koSchedule, espnLookup, standings]);
 
   return (
     <div className="panel active" style={{ maxWidth: 900, margin: '0 auto', padding: '0 20px 30px' }}>
