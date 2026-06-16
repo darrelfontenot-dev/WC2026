@@ -112,15 +112,23 @@ const GROUP_SCHEDULE = [
 ];
 
 /* ── helpers ───────────────────────────────────────────────── */
+function groupFinished(group, standings) {
+  const gs = standings[group];
+  return gs && gs.length > 0 && gs.every(t => t.mp >= 3);
+}
+
 function resolveLabel(code, standings) {
   if (NAMES[code]) return NAMES[code];
   const posMatch = code.match(/^(\d)([A-L])$/);
   if (posMatch) {
     const pos = parseInt(posMatch[1]) - 1;
     const group = posMatch[2];
-    const gs = standings[group];
-    if (gs && gs[pos]) return NAMES[gs[pos].code] || gs[pos].code;
-    return `${pos === 0 ? 'Winner' : 'Runner-up'} Group ${group}`;
+    if (groupFinished(group, standings)) {
+      const gs = standings[group];
+      if (gs && gs[pos]) return NAMES[gs[pos].code] || gs[pos].code;
+    }
+    const labels = ['Winner', 'Runner-up', '3rd'];
+    return `${labels[pos] || pos + 1} Group ${group}`;
   }
   if (/^3[A-L]{2,}$/.test(code)) return 'Best 3rd';
   if (/^[WL]\d+$/.test(code)) return code;
@@ -131,8 +139,11 @@ function resolveCode(code, standings) {
   const posMatch = code.match(/^(\d)([A-L])$/);
   if (posMatch) {
     const pos = parseInt(posMatch[1]) - 1;
-    const gs = standings[posMatch[2]];
-    if (gs && gs[pos]) return gs[pos].code;
+    const group = posMatch[2];
+    if (groupFinished(group, standings)) {
+      const gs = standings[group];
+      if (gs && gs[pos]) return gs[pos].code;
+    }
   }
   return code;
 }
