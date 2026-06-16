@@ -4,6 +4,8 @@ import { supabase } from '../lib/supabase';
 import { GROUPS, FLAGS, NAMES, KO } from '../data/constants';
 import { ArrowUp, ArrowDown, Lock, Save, Check } from 'lucide-react';
 
+const CODE_MIGRATIONS = { SLO:'SUI', BHR:'BIH', PHI:'IRN', DEN:'SEN', CMR:'CRO', OMA:'GHA' };
+
 export default function MyBracket() {
   const { user } = useAuth();
   const [stage, setStage] = useState(1);
@@ -16,7 +18,6 @@ export default function MyBracket() {
   const [submitted, setSubmitted] = useState(false);
 
   // Migrate old team codes to corrected ones
-  const CODE_MIGRATIONS = { SLO:'SUI', BHR:'BIH', PHI:'IRN', DEN:'SEN', CMR:'CRO', OMA:'GHA' };
   const migrateCode = (code) => CODE_MIGRATIONS[code] || code;
   const migrateGroupPicks = (picks) => {
     const migrated = {};
@@ -174,7 +175,9 @@ export default function MyBracket() {
     if (submitted) return;
     setSaving(true);
     try {
-      const bracket_data = { groupPicks, bestThirds, knockoutPicks };
+      const cleanKo = {};
+      Object.keys(knockoutPicks).forEach(k => { if (!k.includes('_loser')) cleanKo[k] = knockoutPicks[k]; });
+      const bracket_data = { groupPicks, bestThirds, knockoutPicks: cleanKo };
       const { error } = await supabase.from('brackets').upsert({
         user_id: user.id,
         bracket_data,
@@ -201,7 +204,9 @@ export default function MyBracket() {
     if (!confirmed) return;
     setSaving(true);
     try {
-      const bracket_data = { groupPicks, bestThirds, knockoutPicks };
+      const cleanKo = {};
+      Object.keys(knockoutPicks).forEach(k => { if (!k.includes('_loser')) cleanKo[k] = knockoutPicks[k]; });
+      const bracket_data = { groupPicks, bestThirds, knockoutPicks: cleanKo };
       const { error } = await supabase.from('brackets').upsert({
         user_id: user.id,
         bracket_data,
@@ -235,7 +240,7 @@ export default function MyBracket() {
   const isStage1Done = true;
   const isStage2Done = bestThirds.length === 8;
   const totalKnockoutMatches = [...KO.left_r32, ...KO.left_r16, ...KO.left_qf, ...KO.left_sf, ...KO.right_r32, ...KO.right_r16, ...KO.right_qf, ...KO.right_sf, KO.final, KO.third].length;
-  const isKnockoutDone = Object.keys(knockoutPicks).length >= totalKnockoutMatches;
+  const isKnockoutDone = Object.keys(knockoutPicks).filter(k => !k.includes('_loser')).length >= totalKnockoutMatches;
   const isFinalScoreDone = finalScore.home !== '' && finalScore.home !== null && finalScore.away !== '' && finalScore.away !== null;
   const isBracketComplete = isStage1Done && isStage2Done && isKnockoutDone && isFinalScoreDone;
 

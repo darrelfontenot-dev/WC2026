@@ -42,7 +42,7 @@ export default function Navbar() {
         </button>
         {user ? (
           <button className="refresh-btn" onClick={handleLogout}>
-            <LogOut size={14} style={{marginRight:4, verticalAlign:'middle'}}/> Logout ({user.email.split('@')[0]})
+            <LogOut size={14} style={{marginRight:4, verticalAlign:'middle'}}/> Logout ({(user.email || '').split('@')[0] || 'User'})
           </button>
         ) : (
           <button className="refresh-btn" onClick={() => setShowAuth(true)}>

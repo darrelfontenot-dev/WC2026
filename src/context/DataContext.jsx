@@ -48,10 +48,14 @@ export function DataProvider({ children }) {
   }, [initEmpty]);
 
   useEffect(() => {
+    let active = true;
     initEmpty();
-    fetchAllData();
-    const timer = setInterval(fetchAllData, 60000);
-    return () => clearInterval(timer);
+    const doFetch = async () => {
+      if (active) await fetchAllData();
+    };
+    doFetch();
+    const timer = setInterval(doFetch, 60000);
+    return () => { active = false; clearInterval(timer); };
   }, [fetchAllData, initEmpty]);
 
   return (

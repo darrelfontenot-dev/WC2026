@@ -29,6 +29,7 @@ export default function Groups() {
                     let cls = '';
                     if (i % 2 === 1) cls += 'group-row-even ';
                     if (done && i < 2) cls += 'qualified ';
+                    if (done && i === 2) cls += 'third-place ';
                     if (done && i >= 3) cls += 'eliminated ';
                     
                     return (
@@ -47,7 +48,7 @@ export default function Groups() {
                   <h4>Matches</h4>
                   {matches.map((m, i) => {
                     const played = m.status === 'FT' || m.status === 'AET' || m.status === 'PEN';
-                    const live = m.status === 'LIVE' || m.status === '1H' || m.status === '2H' || m.status === 'HT' || m.status.includes("'");
+                    const live = m.status === 'LIVE' || m.status === '1H' || m.status === '2H' || m.status === 'HT' || (m.status && m.status.includes("'"));
                     const sc = played || live ? `${m.hs ?? 0} – ${m.as ?? 0}` : 'vs';
                     return (
                       <div key={i} className="group-match">

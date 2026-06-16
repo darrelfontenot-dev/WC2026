@@ -25,24 +25,25 @@ export async function fetchESPNData() {
     }
   }
 
-  // Scoreboard — fetch all tournament dates (Jun 11 – Jul 19 2026)
+  // Scoreboard — fetch all tournament dates (Jun 11 – Jul 19 2026) in parallel
   const dates = [];
-  const start = new Date('2026-06-11');
-  const end = new Date();
-  if (end > new Date('2026-07-19')) end.setTime(new Date('2026-07-19').getTime());
-  for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+  const start = new Date(Date.UTC(2026, 5, 11)); // Jun 11 UTC
+  const now = new Date();
+  const end = now > new Date(Date.UTC(2026, 6, 19)) ? new Date(Date.UTC(2026, 6, 19)) : now;
+  for (let d = new Date(start); d <= end; d.setUTCDate(d.getUTCDate() + 1)) {
     dates.push(d.toISOString().slice(0, 10).replace(/-/g, ''));
   }
   const allEvents = [];
-  for (const dt of dates) {
-    try {
-      const mr = await fetch(`https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard?dates=${dt}`);
-      if (mr.ok) {
-        const md = await mr.json();
-        (md.events || []).forEach(ev => allEvents.push(ev));
-      }
-    } catch (e) {
-      console.warn(`Scoreboard fetch failed for ${dt}:`, e);
+  const results = await Promise.allSettled(
+    dates.map(dt =>
+      fetch(`https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard?dates=${dt}`)
+        .then(r => r.ok ? r.json() : null)
+        .catch(() => null)
+    )
+  );
+  for (const r of results) {
+    if (r.status === 'fulfilled' && r.value) {
+      (r.value.events || []).forEach(ev => allEvents.push(ev));
     }
   }
   // Deduplicate events by id
