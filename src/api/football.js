@@ -69,7 +69,8 @@ export async function fetchESPNData() {
         hs: parseInt(h?.score) || 0, as: parseInt(a?.score) || 0,
         status,
         date: ev.date || '', round: ev.season?.type?.abbreviation || '',
-        venue: c?.venue?.fullName || ''
+        venue: c?.venue?.fullName || '',
+        venueCity: c?.venue?.address?.city || '',
       };
     });
 

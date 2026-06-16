@@ -76,13 +76,34 @@ export default function Venues() {
   const cities = Object.keys(VENUE_CITIES).sort();
   const koSchedule = useMemo(() => parseKOSchedule(), []);
 
+  // Map city names to aliases for matching ESPN venueCity field
+  const CITY_ALIASES = {
+    'East Rutherford': ['east rutherford', 'rutherford', 'metlife'],
+    'Inglewood': ['inglewood', 'sofi'],
+    'Arlington': ['arlington', 'at&t stadium'],
+    'Houston': ['houston', 'nrg'],
+    'Atlanta': ['atlanta', 'mercedes-benz'],
+    'Philadelphia': ['philadelphia', 'lincoln financial'],
+    'Miami': ['miami', 'miami gardens', 'hard rock'],
+    'Seattle': ['seattle', 'lumen'],
+    'Santa Clara': ['santa clara', 'levi'],
+    'Foxborough': ['foxborough', 'foxboro', 'gillette'],
+    'Kansas City': ['kansas city', 'arrowhead'],
+    'Toronto': ['toronto', 'bmo field'],
+    'Vancouver': ['vancouver', 'bc place'],
+    'Mexico City': ['mexico city', 'ciudad de mexico', 'azteca'],
+    'Guadalupe': ['guadalupe', 'monterrey', 'bbva'],
+  };
+
   const fixturesByCity = useMemo(() => {
     const map = {};
     for (const f of allFixtures) {
-      if (!f.venue) continue;
+      const venueLower = (f.venue || '').toLowerCase();
+      const cityLower = (f.venueCity || '').toLowerCase();
+      const haystack = venueLower + ' ' + cityLower;
       for (const city of cities) {
-        if (f.venue.toLowerCase().includes(city.toLowerCase()) ||
-            f.venue.toLowerCase().includes(VENUE_CITIES[city].toLowerCase())) {
+        const aliases = CITY_ALIASES[city] || [city.toLowerCase()];
+        if (aliases.some(a => haystack.includes(a))) {
           if (!map[city]) map[city] = [];
           map[city].push(f);
         }
@@ -118,11 +139,14 @@ export default function Venues() {
       const hc = resolveCode(ko.home, standings);
       const ac = resolveCode(ko.away, standings);
       if (seenKeys.has(`${hc}-${ac}`)) continue;
+      // Parse "Jun 29" / "Jul 2" into a sortable timestamp
+      const koDate = new Date(`${ko.dateStr} 2026 ${ko.timeStr}`);
       rows.push({
         dateStr: ko.dateStr, timeStr: `${ko.timeStr} CDT`,
         homeCode: hc, awayCode: ac,
         homeName: resolveLabel(ko.home, standings), awayName: resolveLabel(ko.away, standings),
-        score: null, status: 'Scheduled', isLive: false, played: false, sortKey: ko.id,
+        score: null, status: 'Scheduled', isLive: false, played: false,
+        sortKey: isNaN(koDate.getTime()) ? 9999999999999 : koDate.getTime(),
       });
     }
 
