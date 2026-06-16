@@ -65,10 +65,11 @@ export default function MyBracket() {
     }
   };
 
-  // Helper to map 3rd place placeholders to actual teams
+  // Helper to map 3rd place placeholders to actual teams using backtracking
+  // to ensure a valid assignment (each team assigned to a slot whose allowed
+  // groups include that team's group).
   const resolvedThirds = useMemo(() => {
     const assignments = {};
-    const available = [...bestThirds];
     
     // Create a mapping of team code to its original group
     const teamToGroup = {};
@@ -76,18 +77,48 @@ export default function MyBracket() {
       teamToGroup[groupPicks[g][2]] = g;
     });
 
-    const placeholders = ['3ABCDF', '3CDFGH', '3BEFIJ', '3AEHIJ', '3CEFHI', '3EHIJK', '3EFGIJ', '3DEIJL'];
-    placeholders.forEach(ph => {
-      // Find a team in available whose group letter is in the placeholder string
-      const matchIdx = available.findIndex(t => ph.includes(teamToGroup[t]));
-      if (matchIdx !== -1) {
-        assignments[ph] = available[matchIdx];
-        available.splice(matchIdx, 1);
-      } else if (available.length > 0) {
-        // Fallback: just assign the first available
-        assignments[ph] = available.shift();
+    // Placeholders with their allowed group letters (from FIFA rules)
+    // Order matches the FIFA combination table positions:
+    // pos1→Match79(1A), pos2→Match85(1B), pos3→Match81(1D), pos4→Match74(1E),
+    // pos5→Match82(1G), pos6→Match77(1I), pos7→Match87(1K), pos8→Match80(1L)
+    const slots = [
+      { key: '3CEFHI', allowed: 'CEFHI' },  // Match 79: 1A vs 3rd
+      { key: '3EFGIJ', allowed: 'EFGIJ' },  // Match 85: 1B vs 3rd
+      { key: '3BEFIJ', allowed: 'BEFIJ' },  // Match 81: 1D vs 3rd
+      { key: '3ABCDF', allowed: 'ABCDF' },  // Match 74: 1E vs 3rd
+      { key: '3AEHIJ', allowed: 'AEHIJ' },  // Match 82: 1G vs 3rd
+      { key: '3CDFGH', allowed: 'CDFGH' },  // Match 77: 1I vs 3rd
+      { key: '3DEIJL', allowed: 'DEIJL' },  // Match 87: 1K vs 3rd
+      { key: '3EHIJK', allowed: 'EHIJK' },  // Match 80: 1L vs 3rd
+    ];
+
+    // Backtracking solver to find valid assignment
+    const teams = [...bestThirds];
+    const result = new Array(slots.length).fill(null);
+    const used = new Array(teams.length).fill(false);
+
+    function solve(slotIdx) {
+      if (slotIdx === slots.length) return true;
+      const { allowed } = slots[slotIdx];
+      for (let i = 0; i < teams.length; i++) {
+        if (used[i]) continue;
+        const group = teamToGroup[teams[i]];
+        if (!group || !allowed.includes(group)) continue;
+        used[i] = true;
+        result[slotIdx] = teams[i];
+        if (solve(slotIdx + 1)) return true;
+        used[i] = false;
+        result[slotIdx] = null;
       }
+      return false;
+    }
+
+    solve(0);
+
+    slots.forEach((slot, idx) => {
+      if (result[idx]) assignments[slot.key] = result[idx];
     });
+
     return assignments;
   }, [bestThirds, groupPicks]);
 
