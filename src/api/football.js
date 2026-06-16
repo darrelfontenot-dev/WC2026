@@ -29,7 +29,10 @@ export async function fetchESPNData() {
   const dates = [];
   const start = new Date(Date.UTC(2026, 5, 11)); // Jun 11 UTC
   const now = new Date();
-  const end = now > new Date(Date.UTC(2026, 6, 19)) ? new Date(Date.UTC(2026, 6, 19)) : now;
+  // Fetch one extra day ahead to catch games that are today in CDT but tomorrow in UTC
+  const tomorrow = new Date(now);
+  tomorrow.setUTCDate(tomorrow.getUTCDate() + 1);
+  const end = tomorrow > new Date(Date.UTC(2026, 6, 19)) ? new Date(Date.UTC(2026, 6, 19)) : tomorrow;
   for (let d = new Date(start); d <= end; d.setUTCDate(d.getUTCDate() + 1)) {
     dates.push(d.toISOString().slice(0, 10).replace(/-/g, ''));
   }
