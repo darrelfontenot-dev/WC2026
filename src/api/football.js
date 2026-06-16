@@ -25,9 +25,14 @@ export async function fetchESPNData() {
     }
   }
 
-  // Scoreboard — fetch today's matches only
-  const today = new Date();
-  const dates = [today.toISOString().slice(0, 10).replace(/-/g, '')];
+  // Scoreboard — fetch all tournament dates (Jun 11 – Jul 19 2026)
+  const dates = [];
+  const start = new Date('2026-06-11');
+  const end = new Date();
+  if (end > new Date('2026-07-19')) end.setTime(new Date('2026-07-19').getTime());
+  for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+    dates.push(d.toISOString().slice(0, 10).replace(/-/g, ''));
+  }
   const allEvents = [];
   for (const dt of dates) {
     try {
