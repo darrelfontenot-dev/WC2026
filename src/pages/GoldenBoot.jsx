@@ -10,7 +10,7 @@ export default function GoldenBoot() {
   useEffect(() => {
     async function fetchGoalScorers() {
       setLoading(true);
-      const goalMap = {}; // key: "PlayerName|TeamAbbr" -> { name, team, goals, assists, penalty }
+      const playerMap = {}; // key: "PlayerName|TeamAbbr" -> { name, team, goals, assists, penalties }
 
       // Get event IDs from fixtures that have been played
       const playedDates = [];
@@ -47,7 +47,7 @@ export default function GoldenBoot() {
           }
         }
 
-        // Fetch summaries in batches to get goal details
+        // Fetch summaries to get per-player stats from rosters
         const ids = [...eventIds];
         const summaryResults = await Promise.allSettled(
           ids.map(id =>
@@ -60,65 +60,59 @@ export default function GoldenBoot() {
         for (const r of summaryResults) {
           if (r.status !== 'fulfilled' || !r.value) continue;
           const summary = r.value;
+          const rosters = summary.rosters || [];
 
-          // Extract from keyEvents or plays
-          const keyEvents = summary.keyEvents || [];
-          const roster = summary.rosters || [];
-
-          // Build team map from rosters
-          const playerTeamMap = {};
-          for (const team of roster) {
-            const abbr = team.team?.abbreviation || '';
-            for (const entry of (team.roster || [])) {
+          // Extract goals and assists from each player's stats in the roster
+          for (const teamRoster of rosters) {
+            const teamAbbr = teamRoster.team?.abbreviation || '';
+            for (const entry of (teamRoster.roster || [])) {
               const athlete = entry.athlete || entry;
-              if (athlete.id) {
-                playerTeamMap[athlete.id] = abbr;
+              const name = athlete.displayName || athlete.shortName || 'Unknown';
+              const stats = entry.stats || [];
+
+              const getStat = (statName) => {
+                const s = stats.find(x => x.name === statName);
+                return s ? parseFloat(s.value) || 0 : 0;
+              };
+
+              const goals = getStat('totalGoals');
+              const assists = getStat('goalAssists');
+              if (goals === 0 && assists === 0) continue;
+
+              const key = `${name}|${teamAbbr}`;
+              if (!playerMap[key]) {
+                playerMap[key] = { name, team: teamAbbr, goals: 0, assists: 0, penalties: 0 };
               }
+              playerMap[key].goals += goals;
+              playerMap[key].assists += assists;
             }
           }
 
+          // Count penalties from keyEvents
+          const keyEvents = summary.keyEvents || [];
           for (const ev of keyEvents) {
-            const play = ev.play || ev;
-            const type = (play.type?.text || play.type?.id || '').toString().toLowerCase();
-            if (!type.includes('goal') || type.includes('missed')) continue;
-
-            // Get scorer
-            const participants = play.participants || [];
-            const scorer = participants.find(p => p.type === 'scorer' || p.athlete);
-            if (!scorer) continue;
-
-            const athlete = scorer.athlete || {};
-            const name = athlete.displayName || athlete.shortName || 'Unknown';
-            const teamAbbr = playerTeamMap[athlete.id] || play.team?.abbreviation || '';
-            const key = `${name}|${teamAbbr}`;
-            const isPenalty = type.includes('penalty') || (play.text || '').toLowerCase().includes('penalty');
-            const isOwnGoal = type.includes('own') || (play.text || '').toLowerCase().includes('own goal');
-
-            if (isOwnGoal) continue; // own goals don't count for golden boot
-
-            if (!goalMap[key]) {
-              goalMap[key] = { name, team: teamAbbr, goals: 0, assists: 0, penalties: 0 };
-            }
-            goalMap[key].goals += 1;
-            if (isPenalty) goalMap[key].penalties += 1;
-
-            // Check for assist
-            const assister = participants.find(p => p.type === 'assist');
-            if (assister) {
-              const aName = assister.athlete?.displayName || assister.athlete?.shortName || '';
-              const aTeam = playerTeamMap[assister.athlete?.id] || teamAbbr;
-              const aKey = `${aName}|${aTeam}`;
-              if (aName) {
-                if (!goalMap[aKey]) {
-                  goalMap[aKey] = { name: aName, team: aTeam, goals: 0, assists: 0, penalties: 0 };
+            const type = (ev.type?.text || '').toLowerCase();
+            if (!type.includes('penalty') || !ev.scoringPlay) continue;
+            const participants = ev.participants || [];
+            if (participants.length > 0) {
+              const scorer = participants[0]?.athlete;
+              if (scorer) {
+                const teamAbbr = ev.team?.displayName || '';
+                // Find matching team abbreviation from rosters
+                const matchingTeam = (summary.rosters || []).find(
+                  t => t.team?.displayName === teamAbbr || t.team?.id === ev.team?.id
+                );
+                const abbr = matchingTeam?.team?.abbreviation || '';
+                const key = `${scorer.displayName}|${abbr}`;
+                if (playerMap[key]) {
+                  playerMap[key].penalties += 1;
                 }
-                goalMap[aKey].assists += 1;
               }
             }
           }
         }
 
-        const sorted = Object.values(goalMap)
+        const sorted = Object.values(playerMap)
           .filter(p => p.goals > 0)
           .sort((a, b) => {
             if (b.goals !== a.goals) return b.goals - a.goals;
