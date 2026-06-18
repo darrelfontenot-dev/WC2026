@@ -1,14 +1,27 @@
 import React from 'react';
 import { useData } from '../context/DataContext';
-import { GROUPS, FLAGS } from '../data/constants';
+import { GROUPS, FLAGS, NAMES } from '../data/constants';
 
 export default function Groups() {
   const { standings, matchesByGroup } = useData();
 
-  if (Object.keys(standings).length === 0) return <div style={{textAlign:'center', padding:40}}>Loading...</div>;
+  if (Object.keys(standings).length === 0) {
+    return (
+      <div className="panel active">
+        <div className="skeleton-grid">
+          {Array.from({ length: 12 }).map((_, i) => <div key={i} className="skeleton-card" />)}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="panel active">
+      <div className="group-legend">
+        <span><i className="legend-swatch q" /> Qualified (top 2)</span>
+        <span><i className="legend-swatch t" /> 3rd place (possible qualifier)</span>
+        <span><i className="legend-swatch e" /> Eliminated</span>
+      </div>
       <div className="groups-container">
         {Object.keys(GROUPS).map(g => {
           const teams = [...(standings[g] || [])].sort((a,b) => b.pts-a.pts || b.gd-a.gd || b.gf-a.gf);
@@ -34,7 +47,7 @@ export default function Groups() {
                     
                     return (
                       <tr key={t.code} className={cls.trim()}>
-                        <td>{t.code}</td>
+                        <td title={NAMES[t.code] || t.name || t.code}>{FLAGS[t.code] || ''} {t.code}</td>
                         <td><b>{t.pts}</b></td>
                         <td>{t.mp}</td><td>{t.w}</td><td>{t.d}</td><td>{t.l}</td>
                         <td>{t.gf}</td><td>{t.ga}</td><td>{t.gd >= 0 ? '+' : ''}{t.gd}</td>
