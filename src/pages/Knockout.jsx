@@ -1,6 +1,11 @@
 import React from 'react';
-import { KO, FLAGS, NAMES } from '../data/constants';
+import { KO, FLAGS, NAMES, GROUPS } from '../data/constants';
 import { useData } from '../context/DataContext';
+
+// Check if two teams are in the same group (i.e. it's a group-stage match)
+function sameGroup(t1, t2) {
+  return Object.values(GROUPS).some(g => g.includes(t1) && g.includes(t2));
+}
 
 // Determine which 4 best third-place teams advance based on standings
 function getBestThirdPlaceTeams(standings) {
@@ -60,9 +65,20 @@ const resolveTeam = (label, koResults, standings) => {
 };
 
 const MatchBlock = ({ match, koResults, standings }) => {
-  const hm = resolveTeam(match.home, koResults, standings);
-  const aw = resolveTeam(match.away, koResults, standings);
+  let hm = resolveTeam(match.home, koResults, standings);
+  let aw = resolveTeam(match.away, koResults, standings);
   const r = koResults[match.id];
+  
+  // If fixture was matched, use actual team codes from the result
+  if (r) {
+    if (r.homeTeam && !hm.code) {
+      hm = { name: `${FLAGS[r.homeTeam] || ''} ${NAMES[r.homeTeam] || r.homeTeam}`, code: r.homeTeam };
+    }
+    if (r.awayTeam && !aw.code) {
+      aw = { name: `${FLAGS[r.awayTeam] || ''} ${NAMES[r.awayTeam] || r.awayTeam}`, code: r.awayTeam };
+    }
+  }
+  
   const has = r && r.hs !== null && r.hs !== undefined;
   
   let hc = 'team', ac = 'team';
@@ -80,6 +96,38 @@ const MatchBlock = ({ match, koResults, standings }) => {
   );
 };
 
+// Parse month+day from KO match info string (e.g. "Jun 29 3:30pm · Foxborough")
+function parseMatchDate(info) {
+  const m = info.match(/^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+(\d+)/);
+  if (!m) return null;
+  const months = { Jan:0, Feb:1, Mar:2, Apr:3, May:4, Jun:5, Jul:6, Aug:7, Sep:8, Oct:9, Nov:10, Dec:11 };
+  return { month: months[m[1]], day: parseInt(m[2]) };
+}
+
+// Check if a fixture date matches a KO match date
+function fixtureMatchesDate(fixture, matchDate) {
+  if (!matchDate || !fixture.date) return false;
+  const fd = new Date(fixture.date);
+  // ESPN dates are UTC; match dates are local (CDT = UTC-5/6), allow same day or +1 day
+  return (fd.getUTCMonth() === matchDate.month && fd.getUTCDate() === matchDate.day) ||
+         (fd.getUTCMonth() === matchDate.month && fd.getUTCDate() === matchDate.day + 1) ||
+         (fd.getUTCMonth() === matchDate.month && fd.getUTCDate() === matchDate.day - 1);
+}
+
+// Get all teams that qualified from group stage (top 2 + best thirds)
+function getKnownKoTeams(standings) {
+  const teams = new Set();
+  Object.values(standings).forEach(group => {
+    if (group && group[0]?.mp >= 3) {
+      teams.add(group[0].code); // 1st
+      if (group[1]) teams.add(group[1].code); // 2nd
+    }
+  });
+  const thirds = getBestThirdPlaceTeams(standings);
+  thirds.forEach(t => { if (t.mp >= 3) teams.add(t.code); });
+  return teams;
+}
+
 // Build koResults by iteratively resolving KO matches against live fixture data
 function buildKoResults(allFixtures, standings) {
   const koResults = {};
@@ -91,38 +139,70 @@ function buildKoResults(allFixtures, standings) {
     KO.final, KO.third,
   ];
 
-  // Build a lookup of finished/live knockout fixtures by team pair
+  // Get set of teams that qualified for knockouts
+  const koTeams = getKnownKoTeams(standings);
+
+  // Finished/live fixtures that involve KO-qualified teams (non-group)
   const koFixtures = allFixtures.filter(f => {
-    const round = (f.round || '').toLowerCase();
-    return !round.includes('group') && (f.status === 'FT' || f.status === 'HT' || f.status.includes("'"));
+    if (f.status !== 'FT' && f.status !== 'HT' && !f.status.includes("'")) return false;
+    // Exclude group-stage matches (both teams in same group)
+    if (sameGroup(f.home, f.away)) return false;
+    // Must involve at least one KO-qualified team
+    return koTeams.has(f.home) || koTeams.has(f.away);
   });
+
+  // Track which fixtures have been claimed
+  const claimed = new Set();
 
   // Multiple passes to resolve dependent matches (R16 depends on R32 results, etc.)
   for (let pass = 0; pass < 5; pass++) {
     for (const match of allKoMatches) {
-      if (koResults[match.id]) continue; // already resolved
+      if (koResults[match.id]) continue;
       const hm = resolveTeam(match.home, koResults, standings);
       const aw = resolveTeam(match.away, koResults, standings);
-      if (!hm.code || !aw.code) continue; // can't resolve teams yet
+      const matchDate = parseMatchDate(match.info);
 
-      // Find fixture matching these two teams
-      const fixture = koFixtures.find(f =>
-        (f.home === hm.code && f.away === aw.code) ||
-        (f.home === aw.code && f.away === hm.code)
-      );
+      // Try to find fixture - prefer both teams matching, fall back to one team + date
+      let fixture = null;
+
+      if (hm.code && aw.code) {
+        fixture = koFixtures.find(f => !claimed.has(f) &&
+          ((f.home === hm.code && f.away === aw.code) ||
+           (f.home === aw.code && f.away === hm.code))
+        );
+      }
+
+      // If both-team match fails, try one team + correct date
+      if (!fixture && hm.code) {
+        fixture = koFixtures.find(f => !claimed.has(f) &&
+          (f.home === hm.code || f.away === hm.code) &&
+          fixtureMatchesDate(f, matchDate)
+        );
+      }
+      if (!fixture && aw.code) {
+        fixture = koFixtures.find(f => !claimed.has(f) &&
+          (f.home === aw.code || f.away === aw.code) &&
+          fixtureMatchesDate(f, matchDate)
+        );
+      }
+
       if (fixture) {
-        const isFlipped = fixture.home === aw.code;
+        claimed.add(fixture);
+        // Determine which fixture team is "home" in our bracket
+        const homeCode = hm.code || (fixture.home !== aw.code ? fixture.home : fixture.away);
+        const awayCode = aw.code || (fixture.home === homeCode ? fixture.away : fixture.home);
+        const isFlipped = fixture.home === awayCode;
         const hs = isFlipped ? fixture.as : fixture.hs;
         const as = isFlipped ? fixture.hs : fixture.as;
         let winner = null;
         if (fixture.status === 'FT') {
-          winner = hs > as ? hm.code : as > hs ? aw.code : null;
-          // For knockouts, there's always a winner (pens) - if tied, ESPN score includes pens
+          winner = hs > as ? homeCode : as > hs ? awayCode : null;
+          // For knockouts there's always a winner (pens) - ESPN includes pen score
           if (!winner) winner = fixture.hs > fixture.as ? fixture.home : fixture.away;
         }
         koResults[match.id] = {
           hs, as, winner,
-          homeTeam: hm.code, awayTeam: aw.code,
+          homeTeam: homeCode, awayTeam: awayCode,
           status: fixture.status,
         };
       }
