@@ -28,8 +28,7 @@ export default function Navbar() {
 
   return (
     <header>
-      <div className="top-row">
-        <h1>World Cup 2026</h1>
+      <div className="top-bar">
         <div className="top-actions">
           <button className="theme-toggle" onClick={toggleTheme} title="Toggle Theme">
             {theme === 'dark' ? <Sun size={18}/> : <Moon size={18}/>}
@@ -45,6 +44,7 @@ export default function Navbar() {
           )}
         </div>
       </div>
+      <h1>World Cup 2026</h1>
 
       <div className="status-bar">
         <span className={statusText.includes('Connected') ? 'live' : 'error'}>{statusText}</span>
