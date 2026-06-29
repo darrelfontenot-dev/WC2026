@@ -23,6 +23,19 @@ export const FLAGS = {
   CRO:'\u{1F1ED}\u{1F1F7}',GHA:'\u{1F1EC}\u{1F1ED}',PAN:'\u{1F1F5}\u{1F1E6}'
 };
 
+// FIFA 3-letter code → ISO 3166 code used by flagcdn.com (subdivisions for home nations)
+export const FLAG_ISO = {
+  MEX:'mx',RSA:'za',KOR:'kr',CZE:'cz',CAN:'ca',SUI:'ch',QAT:'qa',BIH:'ba',
+  BRA:'br',MAR:'ma',SCO:'gb-sct',HAI:'ht',USA:'us',PAR:'py',AUS:'au',TUR:'tr',
+  GER:'de',CUW:'cw',CIV:'ci',ECU:'ec',NED:'nl',JPN:'jp',TUN:'tn',SWE:'se',
+  BEL:'be',EGY:'eg',IRN:'ir',NZL:'nz',ESP:'es',URU:'uy',KSA:'sa',CPV:'cv',
+  FRA:'fr',SEN:'sn',NOR:'no',IRQ:'iq',ARG:'ar',AUT:'at',ALG:'dz',JOR:'jo',
+  POR:'pt',COL:'co',UZB:'uz',COD:'cd',ENG:'gb-eng',CRO:'hr',GHA:'gh',PAN:'pa'
+};
+
+// Return a circular-ready flag image URL for a FIFA code, or null if unknown.
+export const flagUrl = (code) => (FLAG_ISO[code] ? `https://flagcdn.com/${FLAG_ISO[code]}.svg` : null);
+
 export const NAMES = {
   MEX:'Mexico',RSA:'South Africa',KOR:'South Korea',CZE:'Czech Republic',
   CAN:'Canada',SUI:'Switzerland',QAT:'Qatar',BIH:'Bosnia and Herzegovina',

@@ -1,6 +1,27 @@
-import React from 'react';
-import { KO, FLAGS, NAMES, GROUPS } from '../data/constants';
+import React, { useMemo, useState } from 'react';
+import { KO, FLAGS, NAMES, GROUPS, flagUrl } from '../data/constants';
 import { useData } from '../context/DataContext';
+
+/* ── circular wheel geometry ──────────────────────────────── */
+const CX = 500;
+const CY = 500;
+const TEAM_R = 458;                  // outer ring (team badges)
+const RING_R = [372, 292, 212, 128]; // R32, R16, QF, SF junction nodes
+const BADGE_R = 26;
+const STEP = 360 / 32;               // 11.25° between adjacent teams
+
+const toRad = (deg) => (deg * Math.PI) / 180;
+const polar = (deg, r) => ({ x: CX + r * Math.cos(toRad(deg)), y: CY + r * Math.sin(toRad(deg)) });
+
+// Build a ring of parent nodes from child angles (adjacent pairs combine inward).
+function buildRing(childAngles, radius) {
+  const nodes = [];
+  for (let i = 0; i < childAngles.length; i += 2) {
+    const ang = (childAngles[i] + childAngles[i + 1]) / 2;
+    nodes.push({ ang, ...polar(ang, radius) });
+  }
+  return nodes;
+}
 
 // Check if two teams are in the same group (i.e. it's a group-stage match)
 function sameGroup(t1, t2) {
@@ -76,38 +97,6 @@ const resolveTeam = (label, koResults, standings) => {
     return { name: label, code: null };
   }
   return { name: label, code: null };
-};
-
-const MatchBlock = ({ match, koResults, standings }) => {
-  let hm = resolveTeam(match.home, koResults, standings);
-  let aw = resolveTeam(match.away, koResults, standings);
-  const r = koResults[match.id];
-  
-  // If fixture was matched, use actual team codes from the result
-  if (r) {
-    if (r.homeTeam && !hm.code) {
-      hm = { name: `${FLAGS[r.homeTeam] || ''} ${NAMES[r.homeTeam] || r.homeTeam}`, code: r.homeTeam };
-    }
-    if (r.awayTeam && !aw.code) {
-      aw = { name: `${FLAGS[r.awayTeam] || ''} ${NAMES[r.awayTeam] || r.awayTeam}`, code: r.awayTeam };
-    }
-  }
-  
-  const has = r && r.hs !== null && r.hs !== undefined;
-  
-  let hc = 'team', ac = 'team';
-  if (r?.winner) {
-    if (r.winner === hm.code) hc += ' winner';
-    if (r.winner === aw.code) ac += ' winner';
-  }
-
-  return (
-    <div className="ko-match">
-      <div className="match-info">{match.info}{r?.status && r.status !== 'FT' ? ` (${r.status})` : ''}{r?.status === 'FT' ? ' (FT)' : ''}</div>
-      <div className={hc}><span className="team-name">{hm.name}</span><span className="score">{has ? r.hs : ''}</span></div>
-      <div className={ac}><span className="team-name">{aw.name}</span><span className="score">{has ? r.as : ''}</span></div>
-    </div>
-  );
 };
 
 // Parse month+day from KO match info string (e.g. "Jun 29 3:30pm · Foxborough")
@@ -239,54 +228,115 @@ export default function Knockout() {
   const { standings, allFixtures } = useData();
   const koResults = buildKoResults(allFixtures, standings);
   const champ = koResults[104]?.winner || null;
+  const [tip, setTip] = useState(null); // { name, x, y }
+
+  // Build wheel geometry. Bracket data is already in DFS leaf order: left half then right half.
+  const geo = useMemo(() => {
+    const matches = [...KO.left_r32, ...KO.right_r32]; // 16 matches → 32 team slots
+    const slots = [];
+    matches.forEach((m) => {
+      slots.push({ label: m.home, matchId: m.id });
+      slots.push({ label: m.away, matchId: m.id });
+    });
+
+    const teamPts = slots.map((s, i) => {
+      const ang = -90 + STEP * i;
+      return { ang, ...s, ...polar(ang, TEAM_R) };
+    });
+
+    const r32 = buildRing(teamPts.map((p) => p.ang), RING_R[0]); // 16
+    const r16 = buildRing(r32.map((n) => n.ang), RING_R[1]);     // 8
+    const qf = buildRing(r16.map((n) => n.ang), RING_R[2]);      // 4
+    const sf = buildRing(qf.map((n) => n.ang), RING_R[3]);       // 2
+
+    const lines = [];
+    teamPts.forEach((p, i) => lines.push([p, r32[Math.floor(i / 2)]]));
+    r32.forEach((n, j) => lines.push([n, r16[Math.floor(j / 2)]]));
+    r16.forEach((n, k) => lines.push([n, qf[Math.floor(k / 2)]]));
+    qf.forEach((n, m) => lines.push([n, sf[Math.floor(m / 2)]]));
+    sf.forEach((n) => lines.push([n, { x: CX, y: CY }]));
+
+    return { teamPts, nodes: [...r32, ...r16, ...qf, ...sf], lines };
+  }, []);
 
   return (
     <div className="panel active">
-      <div className="bracket-wrap">
-        <div className="knockout">
-          <div className="round">
-            <div className="round-header">Round of 32</div>
-            {KO.left_r32.map(m => <MatchBlock key={m.id} match={m} koResults={koResults} standings={standings} />)}
+      <div className="wheel-wrap">
+        {champ && (
+          <div className="champion-banner wheel-champion">{FLAGS[champ] || ''} {NAMES[champ] || champ} – WORLD CHAMPIONS!</div>
+        )}
+        <div className="wheel-stage">
+        {tip && (
+          <div className="wheel-tip" style={{ left: `${(tip.x / 1000) * 100}%`, top: `${(tip.y / 1000) * 100}%` }}>
+            {tip.name}
           </div>
-          <div className="round">
-            <div className="round-header">Round of 16</div>
-            {KO.left_r16.map(m => <MatchBlock key={m.id} match={m} koResults={koResults} standings={standings} />)}
-          </div>
-          <div className="round">
-            <div className="round-header">Quarterfinals</div>
-            {KO.left_qf.map(m => <MatchBlock key={m.id} match={m} koResults={koResults} standings={standings} />)}
-          </div>
-          <div className="round">
-            <div className="round-header">Semifinals</div>
-            {KO.left_sf.map(m => <MatchBlock key={m.id} match={m} koResults={koResults} standings={standings} />)}
-          </div>
-          
-          <div className="final-area">
-            {champ && <div className="champion-banner">{FLAGS[champ] || ''} {NAMES[champ] || champ} – WORLD CHAMPIONS!</div>}
-            <div className="trophy">🏆</div>
-            <div className="final-label">FINAL</div>
-            <MatchBlock match={KO.final} koResults={koResults} standings={standings} />
-            <div className="third-label">3RD PLACE</div>
-            <MatchBlock match={KO.third} koResults={koResults} standings={standings} />
-          </div>
+        )}
+        <svg viewBox="0 0 1000 1000" className="wheel-svg" role="img" aria-label="World Cup 2026 knockout wheel bracket">
+          <defs>
+            <radialGradient id="centerGlow" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor="#caa24a" stopOpacity="0.55" />
+              <stop offset="35%" stopColor="#8a6f2a" stopOpacity="0.28" />
+              <stop offset="100%" stopColor="#caa24a" stopOpacity="0" />
+            </radialGradient>
+            {/* userSpaceOnUse circle at origin — reused inside each translated badge group */}
+            <clipPath id="badgeClip"><circle cx={0} cy={0} r={BADGE_R} /></clipPath>
+          </defs>
 
-          <div className="round">
-            <div className="round-header">Semifinals</div>
-            {KO.right_sf.map(m => <MatchBlock key={m.id} match={m} koResults={koResults} standings={standings} />)}
-          </div>
-          <div className="round">
-            <div className="round-header">Quarterfinals</div>
-            {KO.right_qf.map(m => <MatchBlock key={m.id} match={m} koResults={koResults} standings={standings} />)}
-          </div>
-          <div className="round">
-            <div className="round-header">Round of 16</div>
-            {KO.right_r16.map(m => <MatchBlock key={m.id} match={m} koResults={koResults} standings={standings} />)}
-          </div>
-          <div className="round">
-            <div className="round-header">Round of 32</div>
-            {KO.right_r32.map(m => <MatchBlock key={m.id} match={m} koResults={koResults} standings={standings} />)}
-          </div>
+          {/* central glow */}
+          <circle cx={CX} cy={CY} r={320} fill="url(#centerGlow)" />
+
+          {/* connector lines */}
+          <g stroke="#565b66" strokeWidth="1.6" fill="none" strokeLinecap="round">
+            {geo.lines.map(([a, b], i) => (
+              <line key={i} x1={a.x} y1={a.y} x2={b.x} y2={b.y} />
+            ))}
+          </g>
+
+          {/* junction nodes */}
+          <g fill="#7c8290">
+            {geo.nodes.map((n, i) => (
+              <circle key={i} cx={n.x} cy={n.y} r={3.6} />
+            ))}
+          </g>
+
+          {/* team badges */}
+          {geo.teamPts.map((p, i) => {
+            const { code } = resolveTeam(p.label, koResults, standings);
+            const url = code ? flagUrl(code) : null;
+            const res = koResults[p.matchId];
+            const isWinner = !!(res && res.winner && res.winner === code);
+            const isOut = !!(res && res.winner && code && res.winner !== code);
+            const tipName = code ? (NAMES[code] || code) : p.label;
+            return (
+              <g key={i} transform={`translate(${p.x} ${p.y})`} opacity={isOut ? 0.45 : 1}
+                style={{ cursor: 'pointer' }}
+                onMouseEnter={() => setTip({ name: tipName, x: p.x, y: p.y })}
+                onMouseLeave={() => setTip(null)}>
+                <title>{tipName}</title>
+                {isWinner && <circle r={BADGE_R + 3.5} fill="none" stroke="#27ae60" strokeWidth="3" />}
+                <circle r={BADGE_R + 1.5} fill="#ffffff" />
+                {url ? (
+                  <image href={url} x={-BADGE_R} y={-BADGE_R} width={BADGE_R * 2} height={BADGE_R * 2}
+                    clipPath="url(#badgeClip)" preserveAspectRatio="xMidYMid slice" />
+                ) : (
+                  <>
+                    <circle r={BADGE_R} fill="#262b36" stroke="#3a4150" strokeWidth="2" />
+                    <text y={1} textAnchor="middle" dominantBaseline="central"
+                      fontSize="9" fontWeight="700" fill="#aeb4c0">{p.label}</text>
+                  </>
+                )}
+                <circle r={BADGE_R} fill="none" stroke={code ? '#e2e4e8' : '#3a4150'} strokeWidth="2" />
+                <text y={BADGE_R + 11} textAnchor="middle"
+                  fontSize="9" fontWeight="600" fill="#cfd3db">{code || p.label}</text>
+              </g>
+            );
+          })}
+
+          {/* center trophy */}
+          <text x={CX} y={CY} textAnchor="middle" dominantBaseline="central" fontSize="66">🏆</text>
+        </svg>
         </div>
+        <p className="wheel-caption">Round of 32 → Final · slots fill in as group &amp; knockout results come in</p>
       </div>
     </div>
   );
