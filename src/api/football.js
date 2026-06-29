@@ -75,6 +75,8 @@ export async function fetchESPNData() {
         date: ev.date || '', round: ev.season?.type?.abbreviation || '',
         venue: c?.venue?.fullName || '',
         venueCity: c?.venue?.address?.city || '',
+        matchNumber: parseInt(c?.notes?.[0]?.headline?.match(/Match\s*(\d+)/i)?.[1]) || 0,
+        phase: c?.notes?.[0]?.headline || ev.competitions?.[0]?.type?.abbreviation || '',
       };
     });
 
