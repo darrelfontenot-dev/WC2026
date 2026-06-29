@@ -16,11 +16,12 @@ export async function fetchESPNData() {
           return {
             code: e.team?.abbreviation || '???',
             name: e.team?.displayName || '',
+            rank: s.rank || 99,
             pts: s.points || 0, w: s.wins || 0, d: s.draws || s.ties || 0, l: s.losses || 0,
             gf: s.pointsFor || s.goalsFor || 0, ga: s.pointsAgainst || s.goalsAgainst || 0,
             gd: s.pointDifferential || s.goalDifference || 0, mp: (s.wins || 0) + (s.draws || s.ties || 0) + (s.losses || 0)
           };
-        });
+        }).sort((a, b) => a.rank - b.rank);
       });
     }
   }
