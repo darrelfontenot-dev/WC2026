@@ -323,6 +323,35 @@ export default function BracketVisual() {
         .bv-popup-flag { width: 64px; height: auto; border-radius: 4px; }
         .bv-popup-score { font-size: 2rem; font-weight: bold; }
         .bv-popup-status { text-align: center; margin-top: 0.75rem; color: #888; font-size: 0.85rem; }
+        @media (prefers-color-scheme: light) {
+          .bv-matchup { background: #f1f5f9; border-color: #cbd5e1; }
+          .bv-team { border-bottom-color: #e2e8f0; }
+          .bv-clickable:hover { background: #e2e8f0; }
+          .bv-winner { background: #d1fae5; }
+          .bv-winner:hover { background: #bbf7d0; }
+          .bv-flag-placeholder { background: #cbd5e1; }
+          .bv-team-name { color: #1e293b; }
+          .bv-round-label { color: #64748b; }
+          .bv-overlay { background: rgba(0,0,0,0.4); }
+          .bv-popup { background: #ffffff; border-color: #e2e8f0; color: #1e293b; }
+          .bv-popup-close { color: #64748b; }
+          .bv-popup-status { color: #64748b; }
+          .bv-champion { color: #b45309; }
+          .bv-third-label { color: #9f1239; }
+        }
+        [data-theme="light"] .bv-matchup { background: #f1f5f9; border-color: #cbd5e1; }
+        [data-theme="light"] .bv-team { border-bottom-color: #e2e8f0; }
+        [data-theme="light"] .bv-clickable:hover { background: #e2e8f0; }
+        [data-theme="light"] .bv-winner { background: #d1fae5; }
+        [data-theme="light"] .bv-winner:hover { background: #bbf7d0; }
+        [data-theme="light"] .bv-flag-placeholder { background: #cbd5e1; }
+        [data-theme="light"] .bv-team-name { color: #1e293b; }
+        [data-theme="light"] .bv-round-label { color: #64748b; }
+        [data-theme="light"] .bv-popup { background: #ffffff; border-color: #e2e8f0; color: #1e293b; }
+        [data-theme="light"] .bv-popup-close { color: #64748b; }
+        [data-theme="light"] .bv-popup-status { color: #64748b; }
+        [data-theme="light"] .bv-champion { color: #b45309; }
+        [data-theme="light"] .bv-third-label { color: #9f1239; }
       `}</style>
     </div>
   );

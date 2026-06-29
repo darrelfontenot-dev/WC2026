@@ -135,7 +135,7 @@ function ScorePopup({ result, onClose }) {
 }
 
 // Arc segment component
-function ArcSegment({ cx, cy, innerR, outerR, startAngle, endAngle, team, isWinner, result, onClickResult }) {
+function ArcSegment({ cx, cy, innerR, outerR, startAngle, endAngle, team, isWinner, result, onClickResult, isDark }) {
   // Draw a filled arc (annular sector)
   const gap = 0.4; // degree gap between segments
   const sa = startAngle + gap;
@@ -165,8 +165,8 @@ function ArcSegment({ cx, cy, innerR, outerR, startAngle, endAngle, team, isWinn
   const imgR = textR;
   const imgPos = polarToCart(cx, cy, imgR, midAngle);
 
-  const fill = isWinner ? '#2a6b2a' : team.code ? '#1a2744' : '#111827';
-  const stroke = isWinner ? '#4ade80' : team.code ? '#334155' : '#1f2937';
+  const fill = isWinner ? (isDark ? '#2a6b2a' : '#bbf7d0') : team.code ? (isDark ? '#1a2744' : '#e2e8f0') : (isDark ? '#111827' : '#f1f5f9');
+  const stroke = isWinner ? (isDark ? '#4ade80' : '#16a34a') : team.code ? (isDark ? '#334155' : '#94a3b8') : (isDark ? '#1f2937' : '#cbd5e1');
 
   return (
     <g
@@ -190,7 +190,7 @@ function ArcSegment({ cx, cy, innerR, outerR, startAngle, endAngle, team, isWinn
           y={textPos.y}
           textAnchor="middle"
           dominantBaseline="middle"
-          fill="#9ca3af"
+          fill={isDark ? '#9ca3af' : '#64748b'}
           fontSize="7"
           style={{ pointerEvents: 'none' }}
         >
@@ -205,6 +205,18 @@ export default function BracketWheel() {
   const { standings, allFixtures } = useData();
   const koResults = useMemo(() => buildKoResults(allFixtures, standings), [allFixtures, standings]);
   const [popup, setPopup] = useState(null);
+  const [theme, setTheme] = useState(() => document.documentElement.getAttribute('data-theme') || 'light');
+
+  // Listen for theme changes
+  React.useEffect(() => {
+    const obs = new MutationObserver(() => {
+      setTheme(document.documentElement.getAttribute('data-theme') || 'light');
+    });
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    return () => obs.disconnect();
+  }, []);
+
+  const isDark = theme === 'dark';
 
   // Ordered matches per round (top half = left, bottom half = right) going clockwise
   // We interleave left and right so the bracket forms a symmetric wheel
@@ -264,6 +276,7 @@ export default function BracketWheel() {
                     isWinner={resolved.result?.winner === resolved.home.code}
                     result={resolved.result}
                     onClickResult={setPopup}
+                    isDark={isDark}
                   />
                   <ArcSegment
                     cx={cx} cy={cy}
@@ -274,13 +287,14 @@ export default function BracketWheel() {
                     isWinner={resolved.result?.winner === resolved.away.code}
                     result={resolved.result}
                     onClickResult={setPopup}
+                    isDark={isDark}
                   />
                 </React.Fragment>
               );
             });
           })}
           {/* Center - champion or trophy */}
-          <circle cx={cx} cy={cy} r={65} fill="#0f172a" stroke="#334155" strokeWidth="2" />
+          <circle cx={cx} cy={cy} r={65} fill={isDark ? '#0f172a' : '#ffffff'} stroke={isDark ? '#334155' : '#94a3b8'} strokeWidth="2" />
           {champ && getFlagUrl(champ) ? (
             <image href={getFlagUrl(champ)} x={cx - 30} y={cy - 20} width="60" height="40" clipPath="inset(0 round 4px)" />
           ) : (
@@ -301,7 +315,7 @@ export default function BracketWheel() {
           ].map(({ r, label }) => {
             const pos = polarToCart(cx, cy, r, 270); // top
             return (
-              <text key={label} x={pos.x} y={pos.y - 3} textAnchor="middle" fill="#475569" fontSize="6" fontWeight="600" letterSpacing="1">
+              <text key={label} x={pos.x} y={pos.y - 3} textAnchor="middle" fill={isDark ? '#475569' : '#64748b'} fontSize="6" fontWeight="600" letterSpacing="1">
                 {label}
               </text>
             );
@@ -327,6 +341,19 @@ export default function BracketWheel() {
         .bw-popup-flag { width: 64px; border-radius: 4px; }
         .bw-popup-score { font-size: 2rem; font-weight: bold; }
         .bw-popup-status { text-align: center; margin-top: 0.75rem; color: #888; font-size: 0.85rem; }
+        @media (prefers-color-scheme: light) {
+          .bw-svg { background: #f8fafc; border-radius: 50%; }
+          .bw-overlay { background: rgba(0,0,0,0.4); }
+          .bw-popup { background: #ffffff; border-color: #e2e8f0; color: #1e293b; }
+          .bw-popup-close { color: #64748b; }
+          .bw-popup-status { color: #64748b; }
+          .bw-champion { color: #b45309; }
+        }
+        [data-theme="light"] .bw-svg { background: #f8fafc; border-radius: 50%; }
+        [data-theme="light"] .bw-popup { background: #ffffff; border-color: #e2e8f0; color: #1e293b; }
+        [data-theme="light"] .bw-popup-close { color: #64748b; }
+        [data-theme="light"] .bw-popup-status { color: #64748b; }
+        [data-theme="light"] .bw-champion { color: #b45309; }
       `}</style>
     </div>
   );
