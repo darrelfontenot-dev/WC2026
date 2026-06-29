@@ -60,6 +60,7 @@ export default function Navbar() {
         <NavLink to="/venues" className={({isActive}) => `tab ${isActive ? 'active' : ''}`}>Venues</NavLink>
         <NavLink to="/golden-boot" className={({isActive}) => `tab ${isActive ? 'active' : ''}`}>Golden Boot</NavLink>
         <NavLink to="/bracket-visual" className={({isActive}) => `tab ${isActive ? 'active' : ''}`}>Visual Bracket</NavLink>
+        <NavLink to="/bracket-wheel" className={({isActive}) => `tab ${isActive ? 'active' : ''}`}>Wheel Bracket</NavLink>
       </div>
 
       {showAuth && <AuthModal onClose={() => setShowAuth(false)} />}
