@@ -169,13 +169,12 @@ function buildKoResults(allFixtures, standings) {
     }
   }
 
-  // PASS 1-5: Resolve by team codes + date fallback
+  // PASS 1-5: Resolve by team codes (no date required - each team plays only once per round)
   for (let pass = 0; pass < 5; pass++) {
     for (const match of allKoMatches) {
       if (koResults[match.id]) continue;
       const hm = resolveTeam(match.home, koResults, standings);
       const aw = resolveTeam(match.away, koResults, standings);
-      const matchDate = parseMatchDate(match.info);
 
       let fixture = null;
 
@@ -187,17 +186,15 @@ function buildKoResults(allFixtures, standings) {
         );
       }
 
-      // Fall back to one team + correct date
+      // Fall back to one team (safe: each team only plays one match per KO round)
       if (!fixture && hm.code) {
         fixture = koFixtures.find(f => !claimed.has(f) &&
-          (f.home === hm.code || f.away === hm.code) &&
-          fixtureMatchesDate(f, matchDate)
+          (f.home === hm.code || f.away === hm.code)
         );
       }
       if (!fixture && aw.code) {
         fixture = koFixtures.find(f => !claimed.has(f) &&
-          (f.home === aw.code || f.away === aw.code) &&
-          fixtureMatchesDate(f, matchDate)
+          (f.home === aw.code || f.away === aw.code)
         );
       }
 
