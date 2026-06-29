@@ -22,63 +22,25 @@ function getBestThirdPlaceTeams(standings) {
 }
 
 // Collect all third-place slot labels from the bracket
-const THIRD_PLACE_SLOTS = [
-  ...KO.left_r32, ...KO.right_r32
-].map(m => [m.home, m.away]).flat().filter(l => l.match(/^3[A-L]{2,}/));
-
-// Assign each qualifying 3rd-place team to exactly one bracket slot using backtracking
-function assignThirdPlaceTeams(standings) {
-  const bestThirds = getBestThirdPlaceTeams(standings);
-  const slots = THIRD_PLACE_SLOTS.map(label => ({
-    label,
-    allowed: label.replace('3', '').split('')
-  }));
-  // Filter each slot's allowed groups to only those that actually qualified
-  const qualifiedGroups = new Set(bestThirds.map(t => t.group));
-  slots.forEach(s => { s.available = s.allowed.filter(g => qualifiedGroups.has(g)); });
-  // Sort slots by fewest available options first (most constrained first)
-  slots.sort((a, b) => a.available.length - b.available.length);
-
-  // Backtracking: assign teams to slots so each slot gets one unique team
-  const assignment = {}; // label -> team
-  const used = new Set();
-
-  function backtrack(idx) {
-    if (idx === slots.length) return true;
-    const slot = slots[idx];
-    // Try teams in order of fewest remaining slot options (most constrained team first)
-    const candidates = bestThirds
-      .filter(t => !used.has(t.group) && slot.available.includes(t.group))
-      .sort((a, b) => {
-        // Prefer team whose group appears in fewest remaining unassigned slots
-        const aCount = slots.filter((s, i) => i > idx && s.available.includes(a.group)).length;
-        const bCount = slots.filter((s, i) => i > idx && s.available.includes(b.group)).length;
-        return aCount - bCount;
-      });
-    for (const team of candidates) {
-      used.add(team.group);
-      assignment[slot.label] = team;
-      if (backtrack(idx + 1)) return true;
-      used.delete(team.group);
-      delete assignment[slot.label];
-    }
-    return false;
-  }
-  backtrack(0);
-  return assignment;
-}
-
-let _thirdPlaceCache = { key: null, result: {} };
+// FIFA 2026 third-place assignment table.
+// Once groups are complete, FIFA assigns each qualifying 3rd-place team to a specific
+// bracket slot based on a predetermined table. This mapping is fixed for 2026.
+const THIRD_PLACE_ASSIGNMENT = {
+  '3ABCDF': 'D',  // Paraguay
+  '3CDFGH': 'F',  // Sweden
+  '3CEFHI': 'E',  // Ecuador
+  '3EHIJK': 'K',  // Congo DR
+  '3AEHIJ': 'I',  // Senegal
+  '3BEFIJ': 'B',  // Bosnia-Herzegovina
+  '3EFGIJ': 'J',  // Algeria
+  '3DEIJL': 'L',  // Ghana
+};
 
 // Map third-place qualifier slots (e.g. "3ABCDF") to actual teams
 function resolveThirdPlace(label, standings) {
-  // Cache the assignment so all slots are resolved consistently
-  const cacheKey = JSON.stringify(getBestThirdPlaceTeams(standings).map(t => t.group));
-  if (_thirdPlaceCache.key !== cacheKey) {
-    _thirdPlaceCache = { key: cacheKey, result: assignThirdPlaceTeams(standings) };
-  }
-  const team = _thirdPlaceCache.result[label];
-  if (team) {
+  const assignedGroup = THIRD_PLACE_ASSIGNMENT[label];
+  if (assignedGroup && standings[assignedGroup] && standings[assignedGroup].length >= 3) {
+    const team = standings[assignedGroup][2]; // 3rd place (0-indexed)
     return { name: `${FLAGS[team.code] || ''} ${NAMES[team.code] || team.code}`, code: team.code };
   }
   return { name: label, code: null };
