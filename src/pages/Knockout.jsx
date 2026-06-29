@@ -240,35 +240,8 @@ export default function Knockout() {
   const koResults = buildKoResults(allFixtures, standings);
   const champ = koResults[104]?.winner || null;
 
-  // Debug: show non-group finished fixtures
-  const debugFixtures = allFixtures.filter(f => {
-    if (f.status !== 'FT' && f.status !== 'HT' && !f.status.includes("'")) return false;
-    if (sameGroup(f.home, f.away)) return false;
-    return true;
-  });
-
   return (
     <div className="panel active">
-      {/* Debug panel - remove after fixing */}
-      <details style={{margin:'10px',padding:'10px',background:'#1a1a2e',border:'1px solid #444',borderRadius:'8px'}}>
-        <summary style={{cursor:'pointer',color:'#0ff'}}>🔧 Debug: KO Data ({debugFixtures.length} knockout fixtures, {Object.keys(koResults).length} matched)</summary>
-        <div style={{fontSize:'11px',color:'#aaa',marginTop:'8px',maxHeight:'200px',overflow:'auto'}}>
-          <div><strong>Standings loaded:</strong> {Object.keys(standings).length} groups</div>
-          <div><strong>Total fixtures:</strong> {allFixtures.length}</div>
-          <div><strong>KO fixtures (non-group, finished):</strong></div>
-          {debugFixtures.map((f,i) => (
-            <div key={i}>{f.home} {f.hs}-{f.as} {f.away} | {f.status} | mn:{f.matchNumber} | {f.date?.slice(0,10)} | {f.phase}</div>
-          ))}
-          <div style={{marginTop:'8px'}}><strong>koResults:</strong></div>
-          {Object.entries(koResults).map(([id,r]) => (
-            <div key={id}>M{id}: {r.homeTeam} {r.hs}-{r.as} {r.awayTeam} winner={r.winner}</div>
-          ))}
-          <div style={{marginTop:'8px'}}><strong>Group B standings:</strong></div>
-          {(standings['B']||[]).map((t,i) => (
-            <div key={i}>#{i+1} {t.code} pts={t.pts} mp={t.mp} gd={t.gd}</div>
-          ))}
-        </div>
-      </details>
       <div className="bracket-wrap">
         <div className="knockout">
           <div className="round">
