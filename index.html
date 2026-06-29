@@ -5,6 +5,15 @@
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚽</text></svg>" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>World Cup 2026 Predictor</title>
+    <script>
+      // Apply saved theme before first paint to avoid a flash / first-load render glitch.
+      (function () {
+        try {
+          var t = localStorage.getItem('wc2026_theme') || 'light';
+          document.documentElement.setAttribute('data-theme', t);
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

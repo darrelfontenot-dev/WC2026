@@ -278,8 +278,14 @@ export default function Knockout() {
               <stop offset="35%" stopColor="#8a6f2a" stopOpacity="0.28" />
               <stop offset="100%" stopColor="#caa24a" stopOpacity="0" />
             </radialGradient>
-            {/* userSpaceOnUse circle at origin — reused inside each translated badge group */}
-            <clipPath id="badgeClip"><circle cx={0} cy={0} r={BADGE_R} /></clipPath>
+            {/* One clip path per badge at its absolute position.
+                Reusing a single userSpaceOnUse clip across transformed groups
+                fails to paint on first render in Chromium until a repaint. */}
+            {geo.teamPts.map((p, i) => (
+              <clipPath key={i} id={`badgeClip${i}`}>
+                <circle cx={p.x} cy={p.y} r={BADGE_R} />
+              </clipPath>
+            ))}
           </defs>
 
           {/* central glow */}
@@ -308,25 +314,25 @@ export default function Knockout() {
             const isOut = !!(res && res.winner && code && res.winner !== code);
             const tipName = code ? (NAMES[code] || code) : p.label;
             return (
-              <g key={i} transform={`translate(${p.x} ${p.y})`} opacity={isOut ? 0.45 : 1}
+              <g key={i} opacity={isOut ? 0.45 : 1}
                 style={{ cursor: 'pointer' }}
                 onMouseEnter={() => setTip({ name: tipName, x: p.x, y: p.y })}
                 onMouseLeave={() => setTip(null)}>
                 <title>{tipName}</title>
-                {isWinner && <circle r={BADGE_R + 3.5} fill="none" stroke="#27ae60" strokeWidth="3" />}
-                <circle r={BADGE_R + 1.5} fill="#ffffff" />
+                {isWinner && <circle cx={p.x} cy={p.y} r={BADGE_R + 3.5} fill="none" stroke="#27ae60" strokeWidth="3" />}
+                <circle cx={p.x} cy={p.y} r={BADGE_R + 1.5} fill="#ffffff" />
                 {url ? (
-                  <image href={url} x={-BADGE_R} y={-BADGE_R} width={BADGE_R * 2} height={BADGE_R * 2}
-                    clipPath="url(#badgeClip)" preserveAspectRatio="xMidYMid slice" />
+                  <image href={url} x={p.x - BADGE_R} y={p.y - BADGE_R} width={BADGE_R * 2} height={BADGE_R * 2}
+                    clipPath={`url(#badgeClip${i})`} preserveAspectRatio="xMidYMid slice" />
                 ) : (
                   <>
-                    <circle r={BADGE_R} fill="#262b36" stroke="#3a4150" strokeWidth="2" />
-                    <text y={1} textAnchor="middle" dominantBaseline="central"
+                    <circle cx={p.x} cy={p.y} r={BADGE_R} fill="#262b36" stroke="#3a4150" strokeWidth="2" />
+                    <text x={p.x} y={p.y + 1} textAnchor="middle" dominantBaseline="central"
                       fontSize="9" fontWeight="700" fill="#aeb4c0">{p.label}</text>
                   </>
                 )}
-                <circle r={BADGE_R} fill="none" stroke={code ? '#e2e4e8' : '#3a4150'} strokeWidth="2" />
-                <text y={BADGE_R + 11} textAnchor="middle"
+                <circle cx={p.x} cy={p.y} r={BADGE_R} fill="none" stroke={code ? '#e2e4e8' : '#3a4150'} strokeWidth="2" />
+                <text x={p.x} y={p.y + BADGE_R + 11} textAnchor="middle"
                   fontSize="9" fontWeight="600" fill="#cfd3db">{code || p.label}</text>
               </g>
             );
