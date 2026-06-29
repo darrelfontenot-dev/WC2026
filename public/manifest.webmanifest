@@ -1,0 +1,25 @@
+{
+  "name": "World Cup 2026",
+  "short_name": "WC 2026",
+  "description": "Live FIFA World Cup 2026 standings, brackets, and predictions.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0c1322",
+  "theme_color": "#1a2744",
+  "icons": [
+    {
+      "src": "/app-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/app-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}

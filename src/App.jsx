@@ -4,6 +4,7 @@ import { AuthProvider } from './context/AuthContext';
 import { DataProvider } from './context/DataContext';
 
 import Navbar from './components/Navbar';
+import InstallPrompt from './components/InstallPrompt';
 import Groups from './pages/Groups';
 import Knockout from './pages/Knockout';
 import Matches from './pages/Matches';
@@ -20,6 +21,7 @@ function App() {
         <BrowserRouter>
           <div className="app-container">
             <Navbar />
+            <InstallPrompt />
             <Routes>
               <Route path="/" element={<Groups />} />
               <Route path="/bracket" element={<Knockout />} />
