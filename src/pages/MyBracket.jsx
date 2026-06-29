@@ -1,13 +1,16 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useData } from '../context/DataContext';
 import { supabase } from '../lib/supabase';
 import { GROUPS, FLAGS, NAMES, KO } from '../data/constants';
-import { ArrowUp, ArrowDown, Lock, Save, Check } from 'lucide-react';
+import { scoreBracket } from '../lib/scoring';
+import { ArrowUp, ArrowDown, Lock, Save, Check, Trophy } from 'lucide-react';
 
 const CODE_MIGRATIONS = { SLO:'SUI', BHR:'BIH', PHI:'IRN', DEN:'SEN', CMR:'CRO', OMA:'GHA' };
 
 export default function MyBracket() {
   const { user } = useAuth();
+  const { standings, allFixtures } = useData();
   const [stage, setStage] = useState(1);
   const [groupPicks, setGroupPicks] = useState(GROUPS);
   const [bestThirds, setThirds] = useState([]);
@@ -46,6 +49,7 @@ export default function MyBracket() {
   }, [user]);
 
   const moveTeam = (group, index, direction) => {
+    if (submitted) return;
     const newPicks = { ...groupPicks };
     const arr = [...newPicks[group]];
     if (direction === -1 && index > 0) {
@@ -58,6 +62,7 @@ export default function MyBracket() {
   };
 
   const toggleThird = (teamCode) => {
+    if (submitted) return;
     if (bestThirds.includes(teamCode)) {
       setThirds(bestThirds.filter(t => t !== teamCode));
     } else if (bestThirds.length < 8) {
@@ -122,6 +127,19 @@ export default function MyBracket() {
     return assignments;
   }, [bestThirds, groupPicks]);
 
+  // Live scoring of the user's current picks against real-world results.
+  const score = useMemo(() => scoreBracket(
+    {
+      bracket_data: { groupPicks, bestThirds, knockoutPicks },
+      final_score_home: parseInt(finalScore.home) || 0,
+      final_score_away: parseInt(finalScore.away) || 0,
+    },
+    standings || {},
+    allFixtures || [],
+  ), [groupPicks, bestThirds, knockoutPicks, finalScore, standings, allFixtures]);
+
+  const hasResults = score.knockout.decided > 0 || Object.values(score.groups).some(g => g.finished);
+
   const resolveTeam = (label) => {
     if (!label) return null;
     const mr = label.match(/^([WL])(\d+)$/);
@@ -181,21 +199,39 @@ export default function MyBracket() {
   const renderKnockoutMatch = (m) => {
     const { hCode, aCode } = getMatchTeams(m);
     const winner = knockoutPicks[m.id];
+    const ki = score.knockout.items.find(i => i.id === m.id);
+    const decided = !!(ki && ki.decided);
+    const actualWinner = ki ? ki.actualWinner : null;
+
+    const cellClass = (code) => {
+      let cls = 'team knockout-pick';
+      const picked = winner === code && code;
+      if (picked) cls += ' winner';
+      if (decided && picked) cls += actualWinner === code ? ' pick-correct' : ' pick-wrong';
+      return cls;
+    };
 
     return (
-      <div key={m.id} className="ko-match">
-        <div className="match-info">{m.info}</div>
-        <div 
-          className={`team knockout-pick ${winner === hCode && hCode ? 'winner' : ''}`}
-          onClick={() => hCode && aCode && handlePick(m.id, hCode, aCode)}
+      <div key={m.id} className={`ko-match ${decided ? 'decided' : ''}`}>
+        <div className="match-info">
+          <span>{m.info}</span>
+          {decided && (ki.correct
+            ? <span className="ko-badge correct">✓ +{ki.points}</span>
+            : <span className="ko-badge wrong">✗ {actualWinner ? `${FLAGS[actualWinner]||''} ${actualWinner}` : 'TBD'}</span>)}
+        </div>
+        <div
+          className={cellClass(hCode)}
+          onClick={() => !submitted && hCode && aCode && handlePick(m.id, hCode, aCode)}
         >
           <span className="team-name">{hCode ? `${FLAGS[hCode]||''} ${NAMES[hCode]||hCode}` : m.home}</span>
+          {decided && actualWinner === hCode && hCode && <Check size={14} className="ko-actual" />}
         </div>
-        <div 
-          className={`team knockout-pick ${winner === aCode && aCode ? 'winner' : ''}`}
-          onClick={() => hCode && aCode && handlePick(m.id, aCode, hCode)}
+        <div
+          className={cellClass(aCode)}
+          onClick={() => !submitted && hCode && aCode && handlePick(m.id, aCode, hCode)}
         >
           <span className="team-name">{aCode ? `${FLAGS[aCode]||''} ${NAMES[aCode]||aCode}` : m.away}</span>
+          {decided && actualWinner === aCode && aCode && <Check size={14} className="ko-actual" />}
         </div>
       </div>
     );
@@ -297,6 +333,22 @@ export default function MyBracket() {
       
       {savedMessage && <div style={{textAlign:'center', color:'var(--green)', fontWeight:'bold', marginBottom:16}}>{savedMessage}</div>}
 
+      {hasResults && (
+        <div className="score-summary">
+          <div className="ss-total">
+            <Trophy size={22} />
+            <span className="ss-num">{score.total}</span>
+            <span className="ss-lbl">pts</span>
+          </div>
+          <div className="ss-break">
+            <div><strong>{score.groupPoints}</strong> from group picks</div>
+            <div><strong>{score.knockout.points}</strong> from knockout · {score.knockout.correct}/{score.knockout.decided} correct</div>
+            {score.final.decided && <div>Final tie-breaker diff: <strong>{score.diff}</strong></div>}
+          </div>
+          <div className="ss-note">Updates live as results come in. Green = correct pick, red = missed.</div>
+        </div>
+      )}
+
       {stage === 1 && (
         <div>
           <h2 style={{textAlign:'center', marginBottom:20}}>Rank the Groups</h2>
@@ -305,18 +357,32 @@ export default function MyBracket() {
             {Object.keys(groupPicks).map(g => (
               <div key={g} className="group" style={{padding:12}}>
                 <div className="group-header" style={{marginBottom:12, borderRadius:4}}>GROUP {g}</div>
-                {groupPicks[g].map((t, i) => (
+                {groupPicks[g].map((t, i) => {
+                  const gItem = score.groups[g]?.finished && i < 2
+                    ? score.groups[g].items.find(it => it.pos === i)
+                    : null;
+                  return (
                   <div key={t} className={`predictor-team rank-${i+1}`}>
                     <div style={{display:'flex', alignItems:'center', gap:12}}>
                       <div className={`rank-badge pos-${i+1}`}>{i+1}</div>
                       <span style={{fontWeight:600}}>{FLAGS[t]} {NAMES[t]||t}</span>
                     </div>
-                    <div style={{display:'flex', flexDirection:'column', gap:4}}>
-                      <button onClick={()=>moveTeam(g, i, -1)} disabled={i===0} style={{border:'none', background:'transparent', cursor:i===0?'default':'pointer', color:i===0?'#ccc':'var(--navy)'}}><ArrowUp size={16}/></button>
-                      <button onClick={()=>moveTeam(g, i, 1)} disabled={i===3} style={{border:'none', background:'transparent', cursor:i===3?'default':'pointer', color:i===3?'#ccc':'var(--navy)'}}><ArrowDown size={16}/></button>
+                    <div style={{display:'flex', alignItems:'center', gap:8}}>
+                      {gItem && (
+                        gItem.status === 'wrong'
+                          ? <span className="pick-badge wrong">✗</span>
+                          : <span className={`pick-badge ${gItem.status === 'exact' ? 'correct' : 'partial'}`}>+{gItem.points}</span>
+                      )}
+                      {!submitted && (
+                        <div style={{display:'flex', flexDirection:'column', gap:4}}>
+                          <button onClick={()=>moveTeam(g, i, -1)} disabled={i===0} style={{border:'none', background:'transparent', cursor:i===0?'default':'pointer', color:i===0?'#ccc':'var(--navy)'}}><ArrowUp size={16}/></button>
+                          <button onClick={()=>moveTeam(g, i, 1)} disabled={i===3} style={{border:'none', background:'transparent', cursor:i===3?'default':'pointer', color:i===3?'#ccc':'var(--navy)'}}><ArrowDown size={16}/></button>
+                        </div>
+                      )}
                     </div>
                   </div>
-                ))}
+                  );
+                })}
               </div>
             ))}
           </div>

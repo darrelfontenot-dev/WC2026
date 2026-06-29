@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { useData } from '../context/DataContext';
+import { scoreBracket } from '../lib/scoring';
 
 export default function Leaderboard() {
   const { standings, allFixtures } = useData();
@@ -31,51 +32,10 @@ export default function Leaderboard() {
     fetchLeaderboard();
   }, []);
 
-  // Compute points for each user based on real world data
+  // Compute points for each user with the shared scoring engine (matches My Bracket).
   const getScore = (bracket) => {
-    let pts = 0;
-    const bd = bracket.bracket_data || {};
-    const gp = bd.groupPicks || {};
-    const ko = bd.knockoutPicks || {};
-
-    // Group stage scoring: 2 pts per correct top-2 team, 1 pt per correct 3rd/4th
-    if (Object.keys(standings).length > 0) {
-      Object.keys(gp).forEach(g => {
-        const real = (standings[g] || []).map(t => t.code);
-        const picks = gp[g] || [];
-        if (real.length >= 4 && real.every(t => (standings[g] || []).find(x => x.code === t && x.mp >= 3))) {
-          // Only score if group is finished
-          if (picks[0] === real[0]) pts += 3; // Exact 1st
-          else if (real.slice(0, 2).includes(picks[0])) pts += 1; // In top 2
-          if (picks[1] === real[1]) pts += 3;
-          else if (real.slice(0, 2).includes(picks[1])) pts += 1;
-        }
-      });
-    }
-
-    // Knockout scoring: compare picks with actual results from fixtures
-    // Matches with status FT/AET/PEN have real winners
-    const koFixtures = allFixtures.filter(f => f.round && !f.round.includes('Group'));
-    koFixtures.forEach(f => {
-      if (!['FT', 'AET', 'PEN'].includes(f.status)) return;
-      const winner = f.hs > f.as ? f.home : f.as > f.hs ? f.away : null;
-      if (!winner) return;
-      // Try to match by finding the KO match this corresponds to
-      Object.keys(ko).forEach(matchId => {
-        if (ko[matchId] === winner) pts += 2;
-      });
-    });
-
-    // Tie-breaker: final score difference
-    const fh = bracket.final_score_home ?? 0;
-    const fa = bracket.final_score_away ?? 0;
-    // Find actual final score from fixtures
-    const finalMatch = allFixtures.find(f => f.round && f.round.includes('Final') && ['FT','AET','PEN'].includes(f.status));
-    let diff = 999;
-    if (finalMatch) {
-      diff = Math.abs((fh - fa) - (finalMatch.hs - finalMatch.as));
-    }
-    return { pts, diff };
+    const s = scoreBracket(bracket, standings, allFixtures);
+    return { pts: s.total, diff: s.diff };
   };
 
   const rankedUsers = users.map(u => ({
