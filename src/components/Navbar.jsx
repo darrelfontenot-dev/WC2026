@@ -55,7 +55,7 @@ export default function Navbar() {
         <NavLink to="/matches" className={({isActive}) => `tab ${isActive ? 'active' : ''}`}>All Matches</NavLink>
         <NavLink to="/" end className={({isActive}) => `tab ${isActive ? 'active' : ''}`}>Groups</NavLink>
         <NavLink to="/bracket-visual" className={({isActive}) => `tab ${isActive ? 'active' : ''}`}>Bracket</NavLink>
-        <NavLink to="/bracket" className={({isActive}) => `tab ${isActive ? 'active' : ''}`}>Live Bracket</NavLink>
+        <NavLink to="/bracket" className={({isActive}) => `tab ${isActive ? 'active' : ''}`}>Wheel Bracket</NavLink>
         <NavLink to="/my-bracket" className={({isActive}) => `tab ${isActive ? 'active' : ''}`}>My Bracket</NavLink>
         <NavLink to="/leaderboard" className={({isActive}) => `tab ${isActive ? 'active' : ''}`}>Leaderboard</NavLink>
         <NavLink to="/venues" className={({isActive}) => `tab ${isActive ? 'active' : ''}`}>Venue</NavLink>
