@@ -33,6 +33,12 @@ function assignThirdPlaceTeams(standings) {
     label,
     allowed: label.replace('3', '').split('')
   }));
+  // Filter each slot's allowed groups to only those that actually qualified
+  const qualifiedGroups = new Set(bestThirds.map(t => t.group));
+  slots.forEach(s => { s.available = s.allowed.filter(g => qualifiedGroups.has(g)); });
+  // Sort slots by fewest available options first (most constrained first)
+  slots.sort((a, b) => a.available.length - b.available.length);
+
   // Backtracking: assign teams to slots so each slot gets one unique team
   const assignment = {}; // label -> team
   const used = new Set();
@@ -40,9 +46,16 @@ function assignThirdPlaceTeams(standings) {
   function backtrack(idx) {
     if (idx === slots.length) return true;
     const slot = slots[idx];
-    for (const team of bestThirds) {
-      if (used.has(team.group)) continue;
-      if (!slot.allowed.includes(team.group)) continue;
+    // Try teams in order of fewest remaining slot options (most constrained team first)
+    const candidates = bestThirds
+      .filter(t => !used.has(t.group) && slot.available.includes(t.group))
+      .sort((a, b) => {
+        // Prefer team whose group appears in fewest remaining unassigned slots
+        const aCount = slots.filter((s, i) => i > idx && s.available.includes(a.group)).length;
+        const bCount = slots.filter((s, i) => i > idx && s.available.includes(b.group)).length;
+        return aCount - bCount;
+      });
+    for (const team of candidates) {
       used.add(team.group);
       assignment[slot.label] = team;
       if (backtrack(idx + 1)) return true;
