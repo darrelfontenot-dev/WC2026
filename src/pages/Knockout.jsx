@@ -21,13 +21,52 @@ function getBestThirdPlaceTeams(standings) {
   return thirds.slice(0, 8); // top 8 third-place teams advance in 48-team format
 }
 
+// Collect all third-place slot labels from the bracket
+const THIRD_PLACE_SLOTS = [
+  ...KO.left_r32, ...KO.right_r32
+].map(m => [m.home, m.away]).flat().filter(l => l.match(/^3[A-L]{2,}/));
+
+// Assign each qualifying 3rd-place team to exactly one bracket slot using backtracking
+function assignThirdPlaceTeams(standings) {
+  const bestThirds = getBestThirdPlaceTeams(standings);
+  const slots = THIRD_PLACE_SLOTS.map(label => ({
+    label,
+    allowed: label.replace('3', '').split('')
+  }));
+  // Backtracking: assign teams to slots so each slot gets one unique team
+  const assignment = {}; // label -> team
+  const used = new Set();
+
+  function backtrack(idx) {
+    if (idx === slots.length) return true;
+    const slot = slots[idx];
+    for (const team of bestThirds) {
+      if (used.has(team.group)) continue;
+      if (!slot.allowed.includes(team.group)) continue;
+      used.add(team.group);
+      assignment[slot.label] = team;
+      if (backtrack(idx + 1)) return true;
+      used.delete(team.group);
+      delete assignment[slot.label];
+    }
+    return false;
+  }
+  backtrack(0);
+  return assignment;
+}
+
+let _thirdPlaceCache = { key: null, result: {} };
+
 // Map third-place qualifier slots (e.g. "3ABCDF") to actual teams
 function resolveThirdPlace(label, standings) {
-  const bestThirds = getBestThirdPlaceTeams(standings);
-  const allowedGroups = label.replace('3', '').split('');
-  const match = bestThirds.find(t => allowedGroups.includes(t.group));
-  if (match) {
-    return { name: `${FLAGS[match.code] || ''} ${NAMES[match.code] || match.code}`, code: match.code };
+  // Cache the assignment so all slots are resolved consistently
+  const cacheKey = JSON.stringify(getBestThirdPlaceTeams(standings).map(t => t.group));
+  if (_thirdPlaceCache.key !== cacheKey) {
+    _thirdPlaceCache = { key: cacheKey, result: assignThirdPlaceTeams(standings) };
+  }
+  const team = _thirdPlaceCache.result[label];
+  if (team) {
+    return { name: `${FLAGS[team.code] || ''} ${NAMES[team.code] || team.code}`, code: team.code };
   }
   return { name: label, code: null };
 }
