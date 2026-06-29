@@ -2,11 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { useData } from '../context/DataContext';
 import { scoreBracket } from '../lib/scoring';
+import BracketView from '../components/BracketView';
+import { X } from 'lucide-react';
 
 export default function Leaderboard() {
   const { standings, allFixtures } = useData();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selected, setSelected] = useState(null);
 
   useEffect(() => {
     async function fetchLeaderboard() {
@@ -67,15 +70,35 @@ export default function Leaderboard() {
                 <tr><td colSpan="4" style={{padding:20, textAlign:'center', color:'#888'}}>No brackets submitted yet.</td></tr>
               )}
               {rankedUsers.map((u, i) => (
-                <tr key={u.id} style={{borderTop:'1px solid var(--border)'}}>
+                <tr key={u.id} className="lb-row" onClick={() => setSelected(u)} title="View this bracket" style={{borderTop:'1px solid var(--border)', cursor:'pointer'}}>
                   <td style={{padding:12, fontWeight:'bold', width:60}}>#{i+1}</td>
-                  <td style={{padding:12}}>{u.username || 'Unknown User'}</td>
+                  <td style={{padding:12, color:'var(--navy)', fontWeight:600}}>{u.username || 'Unknown User'}</td>
                   <td style={{padding:12, textAlign:'center', fontWeight:'bold', color:'var(--navy)'}}>{u.score.pts}</td>
                   <td style={{padding:12, textAlign:'center', color:'#888'}}>{u.score.diff}</td>
                 </tr>
               ))}
             </tbody>
           </table>
+        </div>
+      )}
+
+      {!loading && rankedUsers.length > 0 && (
+        <p style={{textAlign:'center', color:'#888', fontSize:'0.8rem', marginTop:12}}>Tap a row to see that bracket and how the points were earned.</p>
+      )}
+
+      {selected && (
+        <div className="modal-overlay" onClick={() => setSelected(null)}>
+          <div className="modal-content bracket-modal" onClick={e => e.stopPropagation()}>
+            <button className="bracket-modal-close" onClick={() => setSelected(null)} aria-label="Close"><X size={20}/></button>
+            <BracketView
+              username={selected.username || 'Unknown User'}
+              bracketData={selected.bracket_data}
+              finalScoreHome={selected.final_score_home}
+              finalScoreAway={selected.final_score_away}
+              standings={standings}
+              allFixtures={allFixtures}
+            />
+          </div>
         </div>
       )}
     </div>
