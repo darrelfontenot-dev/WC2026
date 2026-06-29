@@ -186,13 +186,13 @@ function buildKoResults(allFixtures, standings) {
         );
       }
 
-      // Fall back to one team (safe: each team only plays one match per KO round)
-      if (!fixture && hm.code) {
+      // Fall back: match if ONE of the resolved teams appears in a fixture
+      // Only use when the other label couldn't resolve (3rd place unknown)
+      if (!fixture && hm.code && !aw.code) {
         fixture = koFixtures.find(f => !claimed.has(f) &&
           (f.home === hm.code || f.away === hm.code)
         );
-      }
-      if (!fixture && aw.code) {
+      } else if (!fixture && aw.code && !hm.code) {
         fixture = koFixtures.find(f => !claimed.has(f) &&
           (f.home === aw.code || f.away === aw.code)
         );
@@ -200,15 +200,15 @@ function buildKoResults(allFixtures, standings) {
 
       if (fixture) {
         claimed.add(fixture);
-        const homeCode = hm.code || (fixture.home !== aw.code ? fixture.home : fixture.away);
-        const awayCode = aw.code || (fixture.home === homeCode ? fixture.away : fixture.home);
-        const isFlipped = fixture.home === awayCode;
-        const hs = isFlipped ? fixture.as : fixture.hs;
-        const as = isFlipped ? fixture.hs : fixture.as;
+        // Always use actual fixture teams - our bracket slot assumptions may be wrong
+        const homeCode = fixture.home;
+        const awayCode = fixture.away;
+        const hs = fixture.hs;
+        const as = fixture.as;
         let winner = null;
         if (fixture.status === 'FT') {
           winner = hs > as ? homeCode : as > hs ? awayCode : null;
-          if (!winner) winner = fixture.hs > fixture.as ? fixture.home : fixture.away;
+          if (!winner) winner = homeCode; // pens - ESPN includes pen score
         }
         koResults[match.id] = {
           hs, as, winner,
