@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { KO, FLAGS, NAMES, GROUPS, flagUrl } from '../data/constants';
 import { useData } from '../context/DataContext';
+import { koWinner } from '../lib/scoring';
 
 /* ── circular wheel geometry ──────────────────────────────── */
 const CX = 500;
@@ -150,11 +151,7 @@ function buildKoResults(allFixtures, standings) {
       claimed.add(fixture);
       const hs = fixture.hs;
       const as = fixture.as;
-      let winner = null;
-      if (fixture.status === 'FT') {
-        winner = hs > as ? fixture.home : as > hs ? fixture.away : null;
-        if (!winner) winner = fixture.home; // tiebreaker shouldn't happen in KO
-      }
+      const winner = koWinner(fixture);
       koResults[match.id] = {
         hs, as, winner,
         homeTeam: fixture.home, awayTeam: fixture.away,
@@ -199,11 +196,7 @@ function buildKoResults(allFixtures, standings) {
         const awayCode = fixture.away;
         const hs = fixture.hs;
         const as = fixture.as;
-        let winner = null;
-        if (fixture.status === 'FT') {
-          winner = hs > as ? homeCode : as > hs ? awayCode : null;
-          if (!winner) winner = homeCode; // pens - ESPN includes pen score
-        }
+        const winner = koWinner(fixture);
         koResults[match.id] = {
           hs, as, winner,
           homeTeam: homeCode, awayTeam: awayCode,

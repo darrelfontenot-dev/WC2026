@@ -64,6 +64,22 @@ function resolveTeam(label, koResults, standings) {
   return { name: label, code: null };
 }
 
+// Determine the winning team code of a finished knockout fixture.
+// Order of trust: ESPN winner flag → penalty (shootout) score → regulation/ET score.
+// Returns null if the match is not finished. NEVER guesses home on a level score,
+// because a level score means it was decided on penalties (use those instead).
+export function koWinner(f) {
+  if (!f || f.status !== 'FT') return null;
+  if (f.homeWinner === true) return f.home;
+  if (f.awayWinner === true) return f.away;
+  if (typeof f.hsPen === 'number' && typeof f.asPen === 'number' && f.hsPen !== f.asPen) {
+    return f.hsPen > f.asPen ? f.home : f.away;
+  }
+  if (f.hs > f.as) return f.home;
+  if (f.as > f.hs) return f.away;
+  return null; // level with no shootout data → unknown, don't guess
+}
+
 // Map live fixtures onto KO match ids → { [matchId]: { winner, homeTeam, awayTeam, hs, as, status } }
 export function buildKoResults(allFixtures, standings) {
   const koResults = {};
@@ -76,7 +92,7 @@ export function buildKoResults(allFixtures, standings) {
     return !sameGroup(f.home, f.away);
   });
   const claimed = new Set();
-  const winnerFor = (f) => (f.status === 'FT' ? (f.hs > f.as ? f.home : f.as > f.hs ? f.away : f.home) : null);
+  const winnerFor = koWinner;
 
   for (const match of allKoMatches) {
     const fixture = koFixtures.find((f) => f.matchNumber === match.id && !claimed.has(f));

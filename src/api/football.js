@@ -69,9 +69,17 @@ export async function fetchESPNData() {
       else if (st.includes('HALFTIME') || st.includes('HALF_TIME')) status = 'HT';
       else if (st.includes('PROGRESS') || st.includes('FIRST_HALF') || st.includes('SECOND_HALF') || st.includes('EXTRA_TIME') || st.includes('SHOOTOUT') || ev.status?.type?.state === 'in') status = clock ? `${clock}'` : 'LIVE';
       else status = 'NS';
+      const penOf = (x) => {
+        const v = x?.shootoutScore ?? x?.penaltyScore;
+        const n = parseInt(v);
+        return Number.isFinite(n) ? n : null;
+      };
       return {
         home: h?.team?.abbreviation || '', away: a?.team?.abbreviation || '',
         hs: parseInt(h?.score) || 0, as: parseInt(a?.score) || 0,
+        // ESPN's authoritative result markers (regulation score above is ET only)
+        homeWinner: h?.winner === true, awayWinner: a?.winner === true,
+        hsPen: penOf(h), asPen: penOf(a),
         status,
         date: ev.date || '', round: ev.season?.type?.abbreviation || '',
         venue: c?.venue?.fullName || '',

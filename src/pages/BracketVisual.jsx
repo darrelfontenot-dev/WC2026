@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { KO, NAMES, GROUPS } from '../data/constants';
 import { useData } from '../context/DataContext';
+import { koWinner } from '../lib/scoring';
 
 // Reuse buildKoResults and resolveTeam logic from Knockout.jsx
 function sameGroup(t1, t2) {
@@ -77,10 +78,7 @@ function buildKoResults(allFixtures, standings) {
     const fixture = koFixtures.find(f => f.matchNumber === match.id && !claimed.has(f));
     if (fixture) {
       claimed.add(fixture);
-      let winner = null;
-      if (fixture.status === 'FT') {
-        winner = fixture.hs > fixture.as ? fixture.home : fixture.as > fixture.hs ? fixture.away : fixture.home;
-      }
+      const winner = koWinner(fixture);
       koResults[match.id] = { hs: fixture.hs, as: fixture.as, winner, homeTeam: fixture.home, awayTeam: fixture.away, status: fixture.status };
     }
   }
@@ -97,8 +95,7 @@ function buildKoResults(allFixtures, standings) {
       else if (!fixture && aw.code && !hm.code) fixture = koFixtures.find(f => !claimed.has(f) && (f.home === aw.code || f.away === aw.code));
       if (fixture) {
         claimed.add(fixture);
-        let winner = null;
-        if (fixture.status === 'FT') winner = fixture.hs > fixture.as ? fixture.home : fixture.as > fixture.hs ? fixture.away : fixture.home;
+        const winner = koWinner(fixture);
         koResults[match.id] = { hs: fixture.hs, as: fixture.as, winner, homeTeam: fixture.home, awayTeam: fixture.away, status: fixture.status };
       }
     }
