@@ -60,8 +60,8 @@ export default function Groups() {
                 <div className="group-matches">
                   <h4>Matches</h4>
                   {matches.map((m, i) => {
-                    const played = m.status === 'FT' || m.status === 'AET' || m.status === 'PEN';
-                    const live = m.status === 'LIVE' || m.status === '1H' || m.status === '2H' || m.status === 'HT' || (m.status && m.status.includes("'"));
+                    const played = m.status === 'FT';
+                    const live = m.status === 'LIVE' || m.status === 'HT' || (m.status && m.status.includes("'"));
                     const sc = played || live ? `${m.hs ?? 0} – ${m.as ?? 0}` : 'vs';
                     return (
                       <div key={i} className="group-match">

@@ -14,12 +14,12 @@ export default function Matches() {
     let sorted = [...allFixtures].sort((a,b) => {
       const da = new Date(a.date);
       const db = new Date(b.date);
-      const aPlayed = ['FT','AET','PEN'].includes(a.status);
-      const bPlayed = ['FT','AET','PEN'].includes(b.status);
+      const aPlayed = a.status === 'FT';
+      const bPlayed = b.status === 'FT';
       const aToday = da.toDateString() === todayStr;
       const bToday = db.toDateString() === todayStr;
-      const aLive = ['LIVE','1H','2H','HT'].includes(a.status) || (a.status && a.status.includes("'"));
-      const bLive = ['LIVE','1H','2H','HT'].includes(b.status) || (b.status && b.status.includes("'"));
+      const aLive = a.status === 'LIVE' || a.status === 'HT' || (a.status && a.status.includes("'"));
+      const bLive = b.status === 'LIVE' || b.status === 'HT' || (b.status && b.status.includes("'"));
       // Live matches first
       if (aLive && !bLive) return -1;
       if (!aLive && bLive) return 1;
@@ -69,8 +69,8 @@ export default function Matches() {
       <div>
         <h3 style={{marginBottom: 12, fontSize: '1.2rem'}}>All Matches</h3>
         {sortedMatches.map((m, i) => {
-          const played = ['FT','AET','PEN'].includes(m.status);
-          const live = ['LIVE','1H','2H','HT'].includes(m.status) || (m.status && m.status.includes("'"));
+          const played = m.status === 'FT';
+          const live = m.status === 'LIVE' || m.status === 'HT' || (m.status && m.status.includes("'"));
           const dt = m.date ? new Date(m.date).toLocaleDateString('en-US',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}) : '';
           const sc = played || live ? `${m.hs ?? 0} – ${m.as ?? 0}` : 'vs';
 

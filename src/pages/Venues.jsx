@@ -217,8 +217,8 @@ export default function Venues() {
     for (const [dateStr, timeStr, home, away, city] of GROUP_SCHEDULE) {
       if (city !== selectedCity) continue;
       const espn = espnLookup[`${home}-${away}`];
-      const played = espn && ['FT', 'AET', 'PEN'].includes(espn.status);
-      const isLive = espn && (espn.status.includes("'") || ['LIVE', '1H', '2H', 'HT'].includes(espn.status));
+      const played = espn && espn.status === 'FT';
+      const isLive = espn && (espn.status.includes("'") || espn.status === 'LIVE' || espn.status === 'HT');
       const sortDate = new Date(`${dateStr} 2026 ${timeStr}`);
       rows.push({
         dateStr, timeStr: `${timeStr} CDT`,
@@ -239,8 +239,8 @@ export default function Venues() {
       let espn = hc && ac ? espnLookup[`${hc}-${ac}`] : null;
       let flipped = false;
       if (!espn && hc && ac) { espn = espnLookup[`${ac}-${hc}`]; flipped = !!espn; }
-      const played = espn && ['FT', 'AET', 'PEN'].includes(espn.status);
-      const isLive = espn && (espn.status.includes("'") || ['LIVE', '1H', '2H', 'HT'].includes(espn.status));
+      const played = espn && espn.status === 'FT';
+      const isLive = espn && (espn.status.includes("'") || espn.status === 'LIVE' || espn.status === 'HT');
       const koDate = new Date(`${ko.dateStr} 2026 ${ko.timeStr}`);
       rows.push({
         dateStr: ko.dateStr, timeStr: `${ko.timeStr} CDT`,
