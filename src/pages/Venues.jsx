@@ -1,6 +1,13 @@
 import React, { useState, useMemo } from 'react';
 import { useData } from '../context/DataContext';
 import { KO, FLAGS, NAMES } from '../data/constants';
+import { buildKoResults } from '../lib/scoring';
+
+// FIFA 2026 third-place assignment: each bracket slot draws from a fixed group's 3rd.
+const THIRD_PLACE_ASSIGNMENT = {
+  '3ABCDF': 'D', '3CDFGH': 'F', '3CEFHI': 'E', '3EHIJK': 'K',
+  '3AEHIJ': 'I', '3BEFIJ': 'B', '3EFGIJ': 'J', '3DEIJL': 'L',
+};
 
 /* ── venue map ─────────────────────────────────────────────── */
 const VENUE_CITIES = {
@@ -117,25 +124,23 @@ function groupFinished(group, standings) {
   return gs && gs.length > 0 && gs.every(t => t.mp >= 3);
 }
 
-function resolveLabel(code, standings) {
-  if (NAMES[code]) return NAMES[code];
+// Friendly placeholder text shown until the real team is known.
+function friendlyLabel(code) {
   const posMatch = code.match(/^(\d)([A-L])$/);
   if (posMatch) {
-    const pos = parseInt(posMatch[1]) - 1;
-    const group = posMatch[2];
-    if (groupFinished(group, standings)) {
-      const gs = standings[group];
-      if (gs && gs[pos]) return NAMES[gs[pos].code] || gs[pos].code;
-    }
     const labels = ['Winner', 'Runner-up', '3rd'];
-    return `${labels[pos] || pos + 1} Group ${group}`;
+    return `${labels[parseInt(posMatch[1]) - 1] || posMatch[1]} Group ${posMatch[2]}`;
   }
   if (/^3[A-L]{2,}$/.test(code)) return 'Best 3rd';
-  if (/^[WL]\d+$/.test(code)) return code;
+  const wl = code.match(/^([WL])(\d+)$/);
+  if (wl) return `${wl[1] === 'W' ? 'Winner' : 'Loser'} Match ${wl[2]}`;
   return code;
 }
 
-function resolveCode(code, standings) {
+// Resolve a bracket-slot label to a real team code once it's determined,
+// otherwise null. Handles group positions, best-3rd slots, and W#/L# refs.
+function resolveCode(code, standings, koResults) {
+  if (NAMES[code]) return code; // already a real team code
   const posMatch = code.match(/^(\d)([A-L])$/);
   if (posMatch) {
     const pos = parseInt(posMatch[1]) - 1;
@@ -144,8 +149,29 @@ function resolveCode(code, standings) {
       const gs = standings[group];
       if (gs && gs[pos]) return gs[pos].code;
     }
+    return null;
   }
-  return code;
+  if (/^3[A-L]{2,}$/.test(code)) {
+    const group = THIRD_PLACE_ASSIGNMENT[code];
+    if (group && groupFinished(group, standings)) {
+      const gs = standings[group];
+      if (gs && gs[2]) return gs[2].code;
+    }
+    return null;
+  }
+  const wl = code.match(/^([WL])(\d+)$/);
+  if (wl) {
+    const r = koResults[parseInt(wl[2])];
+    if (r && r.winner) return wl[1] === 'W' ? r.winner : (r.homeTeam === r.winner ? r.awayTeam : r.homeTeam);
+    return null;
+  }
+  return null;
+}
+
+function resolveLabel(code, standings, koResults) {
+  const resolved = resolveCode(code, standings, koResults);
+  if (resolved) return NAMES[resolved] || resolved;
+  return friendlyLabel(code);
 }
 
 function parseKOSchedule() {
@@ -170,6 +196,9 @@ export default function Venues() {
 
   const cities = Object.keys(VENUE_CITIES).sort();
   const koSchedule = useMemo(() => parseKOSchedule(), []);
+
+  // Resolve knockout winner/loser references from live fixtures.
+  const koResults = useMemo(() => buildKoResults(allFixtures, standings), [allFixtures, standings]);
 
   // Build a lookup from "HOME-AWAY" to ESPN fixture for live scores
   const espnLookup = useMemo(() => {
@@ -204,17 +233,20 @@ export default function Venues() {
 
     // Knockout matches from KO constants
     for (const ko of koSchedule.filter(m => m.city === selectedCity)) {
-      const hc = resolveCode(ko.home, standings);
-      const ac = resolveCode(ko.away, standings);
-      const espn = espnLookup[`${hc}-${ac}`];
+      const hc = resolveCode(ko.home, standings, koResults);
+      const ac = resolveCode(ko.away, standings, koResults);
+      // ESPN may list the fixture in either order; match both and flip the score if needed.
+      let espn = hc && ac ? espnLookup[`${hc}-${ac}`] : null;
+      let flipped = false;
+      if (!espn && hc && ac) { espn = espnLookup[`${ac}-${hc}`]; flipped = !!espn; }
       const played = espn && ['FT', 'AET', 'PEN'].includes(espn.status);
       const isLive = espn && (espn.status.includes("'") || ['LIVE', '1H', '2H', 'HT'].includes(espn.status));
       const koDate = new Date(`${ko.dateStr} 2026 ${ko.timeStr}`);
       rows.push({
         dateStr: ko.dateStr, timeStr: `${ko.timeStr} CDT`,
-        homeCode: hc, awayCode: ac,
-        homeName: resolveLabel(ko.home, standings), awayName: resolveLabel(ko.away, standings),
-        score: (played || isLive) ? `${espn.hs} – ${espn.as}` : null,
+        homeCode: hc || ko.home, awayCode: ac || ko.away,
+        homeName: resolveLabel(ko.home, standings, koResults), awayName: resolveLabel(ko.away, standings, koResults),
+        score: (played || isLive) ? (flipped ? `${espn.as} – ${espn.hs}` : `${espn.hs} – ${espn.as}`) : null,
         status: !espn ? 'Scheduled' : espn.status === 'NS' ? 'Scheduled' : espn.status,
         isLive: !!isLive, played: !!played,
         sortKey: isNaN(koDate.getTime()) ? 9999999999999 : koDate.getTime(),
@@ -223,7 +255,7 @@ export default function Venues() {
 
     rows.sort((a, b) => a.sortKey - b.sortKey);
     return rows;
-  }, [selectedCity, koSchedule, espnLookup, standings]);
+  }, [selectedCity, koSchedule, espnLookup, standings, koResults]);
 
   return (
     <div className="panel active" style={{ maxWidth: 900, margin: '0 auto', padding: '0 20px 30px' }}>
