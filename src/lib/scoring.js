@@ -26,7 +26,8 @@ function sameGroup(t1, t2) {
   return Object.values(GROUPS).some((g) => g.includes(t1) && g.includes(t2));
 }
 
-const THIRD_PLACE_ASSIGNMENT = {
+// FIFA 2026 third-place assignment: each bracket slot draws from a fixed group's 3rd.
+export const THIRD_PLACE_ASSIGNMENT = {
   '3ABCDF': 'D', '3CDFGH': 'F', '3CEFHI': 'E', '3EHIJK': 'K',
   '3AEHIJ': 'I', '3BEFIJ': 'B', '3EFGIJ': 'J', '3DEIJL': 'L',
 };

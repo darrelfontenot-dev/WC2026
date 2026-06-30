@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useData } from '../context/DataContext';
 import { FLAGS } from '../data/constants';
 import { Spinner, EmptyState } from '../components/StateViews';
@@ -8,6 +8,14 @@ export default function GoldenBoot() {
   const { allFixtures } = useData();
   const [scorers, setScorers] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  // Stable fingerprint of played/in-progress matches. Changes only when a score
+  // or status updates, so we avoid re-fetching every ESPN summary each minute.
+  const playedSignature = useMemo(() => allFixtures
+    .filter((f) => f.status === 'FT' || f.status === 'HT' || (f.status || '').includes("'"))
+    .map((f) => `${f.matchNumber}:${f.status}:${f.hs}-${f.as}`)
+    .sort()
+    .join('|'), [allFixtures]);
 
   useEffect(() => {
     async function fetchGoalScorers() {
@@ -131,7 +139,9 @@ export default function GoldenBoot() {
     }
 
     fetchGoalScorers();
-  }, [allFixtures]);
+    // Only refetch when scores/statuses actually change, not on every 60s poll
+    // that hands us a fresh-but-identical fixtures array.
+  }, [playedSignature]);
 
   return (
     <div className="panel active" style={{ maxWidth: 900, margin: '0 auto', padding: '0 20px 40px' }}>
