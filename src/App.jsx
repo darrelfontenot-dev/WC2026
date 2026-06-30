@@ -5,6 +5,7 @@ import { DataProvider } from './context/DataContext';
 
 import Navbar from './components/Navbar';
 import InstallPrompt from './components/InstallPrompt';
+import ScrollToTop from './components/ScrollToTop';
 import Groups from './pages/Groups';
 import Knockout from './pages/Knockout';
 import Matches from './pages/Matches';
@@ -20,8 +21,10 @@ function App() {
       <DataProvider>
         <BrowserRouter>
           <div className="app-container">
+            <ScrollToTop />
             <Navbar />
             <InstallPrompt />
+            <main>
             <Routes>
               <Route path="/" element={<Groups />} />
               <Route path="/bracket" element={<Knockout />} />
@@ -33,6 +36,7 @@ function App() {
               <Route path="/bracket-visual" element={<BracketVisual />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
+            </main>
           </div>
         </BrowserRouter>
       </DataProvider>

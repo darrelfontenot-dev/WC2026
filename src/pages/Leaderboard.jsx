@@ -3,7 +3,8 @@ import { supabase } from '../lib/supabase';
 import { useData } from '../context/DataContext';
 import { scoreBracket } from '../lib/scoring';
 import BracketView from '../components/BracketView';
-import { X } from 'lucide-react';
+import { Spinner, EmptyState } from '../components/StateViews';
+import { X, Trophy } from 'lucide-react';
 
 export default function Leaderboard() {
   const { standings, allFixtures } = useData();
@@ -53,10 +54,16 @@ export default function Leaderboard() {
     <div className="panel active" style={{maxWidth: 800, margin: '0 auto', padding: '0 20px 40px'}}>
       <h2 style={{textAlign:'center', marginBottom:24}}>Global Leaderboard</h2>
       {loading ? (
-        <div style={{textAlign:'center'}}>Loading rankings...</div>
+        <Spinner label="Loading rankings…" />
+      ) : rankedUsers.length === 0 ? (
+        <EmptyState
+          icon={<Trophy size={40}/>}
+          title="No brackets yet"
+          message="Be the first to submit a bracket and claim the top spot."
+        />
       ) : (
-        <div style={{background:'var(--card)', borderRadius:8, border:'1px solid var(--border)', overflow:'hidden'}}>
-          <table style={{width:'100%', borderCollapse:'collapse'}}>
+        <div className="table-scroll" style={{background:'var(--card)', borderRadius:8, border:'1px solid var(--border)'}}>
+          <table style={{width:'100%', borderCollapse:'collapse', minWidth:420}}>
             <thead>
               <tr style={{background:'var(--bg)'}}>
                 <th style={{padding:12, textAlign:'left'}}>Rank</th>
@@ -66,9 +73,6 @@ export default function Leaderboard() {
               </tr>
             </thead>
             <tbody>
-              {rankedUsers.length === 0 && (
-                <tr><td colSpan="4" style={{padding:20, textAlign:'center', color:'#888'}}>No brackets submitted yet.</td></tr>
-              )}
               {rankedUsers.map((u, i) => (
                 <tr key={u.id} className="lb-row" onClick={() => setSelected(u)} title="View this bracket" style={{borderTop:'1px solid var(--border)', cursor:'pointer'}}>
                   <td style={{padding:12, fontWeight:'bold', width:60}}>#{i+1}</td>

@@ -1,6 +1,8 @@
 import React, { useState, useMemo } from 'react';
 import { useData } from '../context/DataContext';
 import { FLAGS } from '../data/constants';
+import { Spinner, EmptyState } from '../components/StateViews';
+import { CalendarX, SearchX } from 'lucide-react';
 
 export default function Matches() {
   const { allFixtures } = useData();
@@ -46,7 +48,11 @@ export default function Matches() {
   }, [allFixtures, search]);
 
   if (!allFixtures.length) {
-    return <p style={{textAlign:'center', color:'#888', padding:20}}>No match data loaded yet. Connect a data source to see all fixtures.</p>;
+    return (
+      <div className="panel active">
+        <Spinner label="Loading fixtures…" />
+      </div>
+    );
   }
 
   return (
@@ -80,7 +86,13 @@ export default function Matches() {
             </div>
           );
         })}
-        {sortedMatches.length === 0 && <p style={{textAlign:'center', color:'#888', marginTop:20}}>No matches found for "{search}"</p>}
+        {sortedMatches.length === 0 && (
+          <EmptyState
+            icon={search ? <SearchX size={40}/> : <CalendarX size={40}/>}
+            title={search ? 'No matches found' : 'No fixtures yet'}
+            message={search ? `Nothing matched “${search}”. Try a different team or venue.` : 'Match data will appear here once available.'}
+          />
+        )}
       </div>
     </div>
   );

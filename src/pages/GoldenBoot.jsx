@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useData } from '../context/DataContext';
 import { FLAGS } from '../data/constants';
+import { Spinner, EmptyState } from '../components/StateViews';
+import { Footprints } from 'lucide-react';
 
 export default function GoldenBoot() {
   const { allFixtures } = useData();
@@ -139,13 +141,15 @@ export default function GoldenBoot() {
       </p>
 
       {loading ? (
-        <div style={{ textAlign: 'center' }}>Loading goal scorers...</div>
+        <Spinner label="Loading goal scorers…" />
       ) : scorers.length === 0 ? (
-        <div style={{ textAlign: 'center', color: 'var(--muted)' }}>
-          No goals scored yet. Check back once matches begin!
-        </div>
+        <EmptyState
+          icon={<Footprints size={40}/>}
+          title="No goals yet"
+          message="The race for the Golden Boot starts once matches kick off."
+        />
       ) : (
-        <div style={{ background: 'var(--card)', borderRadius: 8, border: '1px solid var(--border)', overflow: 'hidden' }}>
+        <div className="table-scroll" style={{ background: 'var(--card)', borderRadius: 8, border: '1px solid var(--border)' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr style={{ background: 'var(--bg)' }}>
