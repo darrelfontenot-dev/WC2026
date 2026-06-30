@@ -236,9 +236,18 @@ a:focus-visible, button:focus-visible, input:focus-visible, .tab:focus-visible {
 }
 .wheel-svg text { font-family: 'Segoe UI', system-ui, sans-serif; }
 .wheel-caption { text-align: center; color: #9aa0ab; font-size: 0.78rem; margin-top: 10px; }
-.wheel-champion { margin: 0 auto 14px; max-width: 520px; }
+.wheel-champion { margin: 0 auto 14px; max-width: 560px; }
+.wheel-champion.correct { background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%); color: #fff; }
+.wheel-champion.wrong { background: linear-gradient(135deg, #e74c3c 0%, #ff6b5b 100%); color: #fff; }
+.wheel-legend { display: flex; justify-content: center; flex-wrap: wrap; gap: 16px; margin: 12px auto 0; font-size: 0.78rem; color: #9aa0ab; }
+.wheel-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.wl-dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+.wl-dot.correct { background: #27ae60; }
+.wl-dot.wrong { background: #e74c3c; }
+.wl-dot.pending { background: #7c8290; }
 @media (max-width: 600px) {
   .wheel-wrap { padding: 8px; border-radius: 12px; }
+  .wheel-legend { gap: 12px; font-size: 0.72rem; }
 }
 
 /* Bracket */

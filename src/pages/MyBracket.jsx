@@ -4,6 +4,7 @@ import { useData } from '../context/DataContext';
 import { supabase } from '../lib/supabase';
 import { GROUPS, FLAGS, NAMES, KO } from '../data/constants';
 import { scoreBracket } from '../lib/scoring';
+import MyWheelBracket from '../components/MyWheelBracket';
 import { ArrowUp, ArrowDown, Lock, Save, Check, Trophy } from 'lucide-react';
 
 const CODE_MIGRATIONS = { SLO:'SUI', BHR:'BIH', PHI:'IRN', DEN:'SEN', CMR:'CRO', OMA:'GHA' };
@@ -318,6 +319,7 @@ export default function MyBracket() {
         <button className={`wizard-btn ${stage===2?'active':''} ${!isStage1Done?'locked':''}`} onClick={()=>isStage1Done && setStage(2)}>2. Best 3rds</button>
         <button className={`wizard-btn ${stage===3?'active':''} ${!isStage2Done?'locked':''}`} onClick={()=>isStage2Done && setStage(3)}>3. Knockout</button>
         <button className={`wizard-btn ${stage===4?'active':''} ${!isStage2Done?'locked':''}`} onClick={()=>isStage2Done && setStage(4)}>4. Final Score</button>
+        <button className={`wizard-btn ${stage===5?'active':''} ${!isStage2Done?'locked':''}`} onClick={()=>isStage2Done && setStage(5)}>5. My Wheel</button>
         
         <button className="wizard-btn" onClick={handleSave} disabled={submitted || saving} style={{marginLeft:'auto', background: submitted ? '#888' : 'var(--navy)', color:'white', borderColor: submitted ? '#888' : 'var(--navy)', cursor: submitted ? 'not-allowed' : 'pointer'}}>
           {submitted ? <><Lock size={14}/> Locked</> : saving ? 'Saving...' : <><Save size={14}/> Save</>}
@@ -455,6 +457,20 @@ export default function MyBracket() {
               </div>
             </div>
           </div>
+        </div>
+      )}
+
+      {stage === 5 && (
+        <div>
+          <h2 style={{textAlign:'center', marginBottom:8}}>My Wheel Bracket</h2>
+          <p style={{textAlign:'center', color:'#888', marginBottom:24}}>Your picks on the wheel. A <strong style={{color:'var(--green)'}}>green ✓</strong> means you got it right; a <strong style={{color:'var(--red)'}}>red ✗</strong> means a wrong or missed pick.</p>
+          <MyWheelBracket
+            groupPicks={groupPicks}
+            resolvedThirds={resolvedThirds}
+            knockoutPicks={knockoutPicks}
+            standings={standings}
+            allFixtures={allFixtures}
+          />
         </div>
       )}
 

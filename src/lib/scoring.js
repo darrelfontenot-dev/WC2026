@@ -40,7 +40,7 @@ function resolveThirdPlace(label, standings) {
   return { name: label, code: null };
 }
 
-function resolveTeam(label, koResults, standings) {
+export function resolveTeam(label, koResults, standings) {
   if (!label) return { name: 'TBD', code: null };
   const mr = label.match(/^([WL])(\d+)$/);
   if (mr) {
