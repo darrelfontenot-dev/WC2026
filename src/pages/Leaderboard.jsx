@@ -75,7 +75,9 @@ export default function Leaderboard() {
             <tbody>
               {rankedUsers.map((u, i) => (
                 <tr key={u.id} className="lb-row" onClick={() => setSelected(u)} title="View this bracket" style={{borderTop:'1px solid var(--border)', cursor:'pointer'}}>
-                  <td style={{padding:12, fontWeight:'bold', width:60}}>#{i+1}</td>
+                  <td style={{padding:12, fontWeight:'bold', width:60}}>
+                    {i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `#${i+1}`}
+                  </td>
                   <td style={{padding:12, color:'var(--navy)', fontWeight:600}}>{u.username || 'Unknown User'}</td>
                   <td style={{padding:12, textAlign:'center', fontWeight:'bold', color:'var(--navy)'}}>{u.score.pts}</td>
                   <td style={{padding:12, textAlign:'center', color:'#888'}}>{u.score.diff}</td>
