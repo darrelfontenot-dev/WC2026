@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
-import { fetchESPNData, bucketGroupMatches } from '../api/football';
+import { fetchESPNData, bucketGroupMatches, getCachedData } from '../api/football';
 import { GROUPS, NAMES } from '../data/constants';
 
 const DataContext = createContext();
@@ -49,7 +49,18 @@ export function DataProvider({ children }) {
 
   useEffect(() => {
     let active = true;
-    initEmpty();
+
+    // Show cached data immediately so the page isn't blank while fetching
+    const cached = getCachedData();
+    if (cached) {
+      setStandings(cached.standings);
+      setAllFixtures(cached.allFixtures);
+      setMatchesByGroup(bucketGroupMatches(cached.allFixtures));
+      setStatusText('Refreshing...');
+    } else {
+      initEmpty();
+    }
+
     const doFetch = async () => {
       if (active) await fetchAllData();
     };

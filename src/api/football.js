@@ -1,9 +1,39 @@
+const CACHE_KEY = 'wc2026_data_cache';
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
+// Returns cached data if fresh enough, otherwise null
+export function getCachedData() {
+  try {
+    const raw = localStorage.getItem(CACHE_KEY);
+    if (!raw) return null;
+    const { ts, data } = JSON.parse(raw);
+    if (Date.now() - ts < CACHE_TTL) return data;
+  } catch { /* ignore */ }
+  return null;
+}
+
+function saveCache(data) {
+  try { localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), data })); } catch { /* ignore */ }
+}
+
+// Fetch with an 8-second timeout
+async function fetchWithTimeout(url, ms = 8000) {
+  const ctrl = new AbortController();
+  const id = setTimeout(() => ctrl.abort(), ms);
+  try {
+    const r = await fetch(url, { signal: ctrl.signal });
+    return r;
+  } finally {
+    clearTimeout(id);
+  }
+}
+
 export async function fetchESPNData() {
   const standings = {};
   let allFixtures = [];
 
   // Standings
-  const sr = await fetch('https://site.api.espn.com/apis/v2/sports/soccer/fifa.world/standings');
+  const sr = await fetchWithTimeout('https://site.api.espn.com/apis/v2/sports/soccer/fifa.world/standings');
   if (sr.ok) {
     const sd = await sr.json();
     if (sd.children) {
@@ -40,7 +70,7 @@ export async function fetchESPNData() {
   const allEvents = [];
   const results = await Promise.allSettled(
     dates.map(dt =>
-      fetch(`https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard?dates=${dt}`)
+      fetchWithTimeout(`https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard?dates=${dt}`)
         .then(r => r.ok ? r.json() : null)
         .catch(() => null)
     )
@@ -89,7 +119,9 @@ export async function fetchESPNData() {
       };
     });
 
-  return { standings, allFixtures };
+  const result = { standings, allFixtures };
+  saveCache(result);
+  return result;
 }
 
 export function bucketGroupMatches(allFixtures) {
