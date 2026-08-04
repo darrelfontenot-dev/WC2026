@@ -417,6 +417,53 @@ a:focus-visible, button:focus-visible, input:focus-visible, .tab:focus-visible {
 [data-theme="dark"] .dt-past     { background: #4a1a1a; color: #ff8080; }
 [data-theme="dark"] .dt-upcoming { background: #1a3a28; color: #60d890; }
 
+/* ── Baby Margo — Scoring & Admin ───────────────────────────────────────── */
+.bm-subscore { font-size: 0.75rem; color: var(--muted); margin-left: 5px; }
+.bm-score-cell { font-weight: 700; color: var(--navy); text-align: center; font-size: 1rem; }
+[data-theme="dark"] .bm-score-cell { color: var(--gold); }
+
+/* Leaderboard */
+.bm-leaderboard { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px 14px; margin-bottom: 24px; box-shadow: var(--shadow); }
+.bm-leaderboard-title { display: flex; align-items: center; gap: 8px; font-size: 1.1rem; font-weight: 700; color: var(--navy); margin-bottom: 12px; }
+[data-theme="dark"] .bm-leaderboard-title { color: var(--gold); }
+.bm-actual-banner { display: flex; flex-wrap: wrap; gap: 10px 20px; background: linear-gradient(135deg,#e8f0ff,#fdf6e8); border-radius: 8px; padding: 10px 14px; margin-bottom: 14px; font-size: 0.88rem; font-weight: 600; color: var(--navy); }
+[data-theme="dark"] .bm-actual-banner { background: linear-gradient(135deg,#1a2040,#2a2010); color: #d0d8ff; }
+.bm-rank-row { display: flex; align-items: baseline; gap: 10px; padding: 7px 4px; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+.bm-rank-row:last-of-type { border-bottom: none; }
+.bm-rank-top { background: rgba(212,168,67,0.07); border-radius: 6px; }
+.bm-rank-pos  { font-size: 1.1rem; min-width: 28px; text-align: center; flex-shrink: 0; }
+.bm-rank-name { font-weight: 600; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bm-rank-total { font-weight: 700; color: var(--navy); min-width: 52px; text-align: right; flex-shrink: 0; }
+[data-theme="dark"] .bm-rank-total { color: var(--gold); }
+.bm-rank-breakdown { font-size: 0.75rem; color: var(--muted); flex-shrink: 0; white-space: nowrap; }
+.bm-scoring-note { margin: 12px 0 0; font-size: 0.78rem; color: var(--muted); text-align: center; }
+
+/* Admin section */
+.bm-admin-section { margin-top: 28px; text-align: center; }
+.bm-admin-toggle { display: inline-flex; align-items: center; gap: 6px; background: none; border: 1px solid var(--border); border-radius: 20px; padding: 6px 16px; font-size: 0.8rem; color: var(--muted); cursor: pointer; transition: all 0.15s; }
+.bm-admin-toggle:hover { border-color: var(--navy); color: var(--navy); }
+.bm-admin-panel { margin-top: 14px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; max-width: 420px; margin-left: auto; margin-right: auto; text-align: left; box-shadow: var(--shadow); }
+.bm-pin-form { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.bm-pin-form label { font-weight: 600; font-size: 0.9rem; }
+.bm-pin-form input { border: 1px solid var(--border); border-radius: 6px; padding: 7px 12px; font-size: 0.9rem; background: var(--bg); color: var(--text); width: 130px; }
+.bm-pin-form button { background: var(--navy); color: #fff; border: none; border-radius: 6px; padding: 7px 16px; font-size: 0.9rem; cursor: pointer; }
+.bm-pin-form button:hover { opacity: 0.85; }
+.bm-pin-error { font-size: 0.82rem; color: #c0392b; }
+.bm-results-form h3 { margin: 0 0 14px; font-size: 1rem; color: var(--navy); }
+.bm-form-row { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+.bm-form-row label { min-width: 60px; font-weight: 600; font-size: 0.88rem; color: var(--text); }
+.bm-form-row input, .bm-form-row select { border: 1px solid var(--border); border-radius: 6px; padding: 6px 10px; font-size: 0.88rem; background: var(--bg); color: var(--text); }
+.bm-form-row input[type="number"] { width: 74px; }
+.bm-form-row input[type="date"]   { width: 150px; }
+.bm-form-row input[type="time"]   { width: 120px; }
+.bm-form-row select { width: 180px; }
+.bm-form-row span { font-size: 0.82rem; color: var(--muted); }
+.bm-form-actions { display: flex; gap: 10px; margin-top: 16px; }
+.bm-save-btn  { background: var(--navy); color: #fff; border: none; border-radius: 8px; padding: 9px 20px; font-size: 0.9rem; cursor: pointer; font-weight: 600; }
+.bm-save-btn:hover { opacity: 0.85; }
+.bm-clear-btn { background: none; color: #c0392b; border: 1px solid #c0392b; border-radius: 8px; padding: 9px 16px; font-size: 0.9rem; cursor: pointer; }
+.bm-clear-btn:hover { background: #fde8e8; }
+
 /* Respect users who prefer reduced motion */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; scroll-behavior: auto !important; }

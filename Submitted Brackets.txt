@@ -1,0 +1,1007 @@
+[
+  {
+    "id": "33d37ab3-e484-4536-826b-aca0d3223546",
+    "user_id": "66b7a099-e4ab-49e3-8a3a-1ece861349f0",
+    "bracket_data": {
+      "bestThirds": [
+        "KOR",
+        "QAT",
+        "SCO",
+        "TUR",
+        "CIV",
+        "JPN",
+        "NOR",
+        "PAN"
+      ],
+      "groupPicks": {
+        "A": [
+          "MEX",
+          "CZE",
+          "KOR",
+          "RSA"
+        ],
+        "B": [
+          "CAN",
+          "SUI",
+          "QAT",
+          "BIH"
+        ],
+        "C": [
+          "BRA",
+          "MAR",
+          "SCO",
+          "HAI"
+        ],
+        "D": [
+          "USA",
+          "AUS",
+          "TUR",
+          "PAR"
+        ],
+        "E": [
+          "GER",
+          "ECU",
+          "CIV",
+          "CUW"
+        ],
+        "F": [
+          "NED",
+          "SWE",
+          "JPN",
+          "TUN"
+        ],
+        "G": [
+          "BEL",
+          "NZL",
+          "IRN",
+          "EGY"
+        ],
+        "H": [
+          "ESP",
+          "URU",
+          "KSA",
+          "CPV"
+        ],
+        "I": [
+          "FRA",
+          "SEN",
+          "NOR",
+          "IRQ"
+        ],
+        "J": [
+          "ARG",
+          "AUT",
+          "ALG",
+          "JOR"
+        ],
+        "K": [
+          "POR",
+          "COL",
+          "UZB",
+          "COD"
+        ],
+        "L": [
+          "ENG",
+          "CRO",
+          "PAN",
+          "GHA"
+        ]
+      },
+      "knockoutPicks": {
+        "73": "SUI",
+        "74": "GER",
+        "75": "NED",
+        "76": "BRA",
+        "77": "FRA",
+        "78": "ECU",
+        "79": "MEX",
+        "80": "ENG",
+        "81": "USA",
+        "82": "BEL",
+        "83": "COL",
+        "84": "ESP",
+        "85": "CAN",
+        "86": "ARG",
+        "87": "POR",
+        "88": "AUS",
+        "89": "FRA",
+        "90": "NED",
+        "91": "ECU",
+        "92": "ENG",
+        "93": "ESP",
+        "94": "USA",
+        "95": "ARG",
+        "96": "POR",
+        "97": "FRA",
+        "98": "ESP",
+        "99": "ENG",
+        "100": "ARG",
+        "101": "FRA",
+        "102": "ENG",
+        "103": "ESP",
+        "104": "FRA"
+      }
+    },
+    "final_score_home": 2,
+    "final_score_away": 0,
+    "updated_at": "2026-06-16 12:04:18.033+00",
+    "submitted": true
+  },
+  {
+    "id": "0c9a85b4-d027-49f2-af54-6f6b01c922e1",
+    "user_id": "2fe72289-718e-4b98-bd77-575ecaa322d7",
+    "bracket_data": {
+      "bestThirds": [
+        "SCO",
+        "PAR",
+        "SWE",
+        "COL",
+        "PAN",
+        "ALG",
+        "NZL",
+        "QAT"
+      ],
+      "groupPicks": {
+        "A": [
+          "MEX",
+          "KOR",
+          "RSA",
+          "CZE"
+        ],
+        "B": [
+          "CAN",
+          "SUI",
+          "QAT",
+          "BIH"
+        ],
+        "C": [
+          "BRA",
+          "MAR",
+          "SCO",
+          "HAI"
+        ],
+        "D": [
+          "USA",
+          "AUS",
+          "PAR",
+          "TUR"
+        ],
+        "E": [
+          "GER",
+          "ECU",
+          "CIV",
+          "CUW"
+        ],
+        "F": [
+          "NED",
+          "JPN",
+          "SWE",
+          "TUN"
+        ],
+        "G": [
+          "BEL",
+          "EGY",
+          "NZL",
+          "IRN"
+        ],
+        "H": [
+          "ESP",
+          "URU",
+          "KSA",
+          "CPV"
+        ],
+        "I": [
+          "FRA",
+          "NOR",
+          "SEN",
+          "IRQ"
+        ],
+        "J": [
+          "ARG",
+          "AUT",
+          "ALG",
+          "JOR"
+        ],
+        "K": [
+          "POR",
+          "UZB",
+          "COL",
+          "COD"
+        ],
+        "L": [
+          "ENG",
+          "GHA",
+          "PAN",
+          "CRO"
+        ]
+      },
+      "knockoutPicks": {
+        "73": "KOR",
+        "74": "GER",
+        "75": "MAR",
+        "76": "BRA",
+        "77": "FRA",
+        "78": "NOR",
+        "79": "MEX",
+        "80": "ENG",
+        "81": "USA",
+        "82": "BEL",
+        "83": "GHA",
+        "84": "ESP",
+        "85": "CAN",
+        "86": "ARG",
+        "87": "POR",
+        "88": "AUS",
+        "89": "FRA",
+        "90": "MAR",
+        "91": "BRA",
+        "92": "ENG",
+        "93": "ESP",
+        "94": "USA",
+        "95": "ARG",
+        "96": "POR",
+        "97": "FRA",
+        "98": "ESP",
+        "99": "ENG",
+        "100": "ARG",
+        "101": "ESP",
+        "102": "ARG",
+        "103": "ENG",
+        "104": "ESP"
+      }
+    },
+    "final_score_home": 2,
+    "final_score_away": 1,
+    "updated_at": "2026-06-15 17:00:12.297+00",
+    "submitted": true
+  },
+  {
+    "id": "4ff18aad-8833-40d5-b9ac-d938d4d6c265",
+    "user_id": "cd1cf24a-1ee6-494e-9c66-285bfab3c0a2",
+    "bracket_data": {
+      "bestThirds": [
+        "RSA",
+        "SUI",
+        "PAR",
+        "SWE",
+        "NZL",
+        "SEN",
+        "PAN",
+        "CIV"
+      ],
+      "groupPicks": {
+        "A": [
+          "MEX",
+          "KOR",
+          "RSA",
+          "CZE"
+        ],
+        "B": [
+          "QAT",
+          "CAN",
+          "SUI",
+          "BIH"
+        ],
+        "C": [
+          "BRA",
+          "MAR",
+          "HAI",
+          "SCO"
+        ],
+        "D": [
+          "USA",
+          "AUS",
+          "PAR",
+          "TUR"
+        ],
+        "E": [
+          "GER",
+          "CUW",
+          "CIV",
+          "ECU"
+        ],
+        "F": [
+          "JPN",
+          "NED",
+          "SWE",
+          "TUN"
+        ],
+        "G": [
+          "BEL",
+          "EGY",
+          "NZL",
+          "IRN"
+        ],
+        "H": [
+          "ESP",
+          "KSA",
+          "URU",
+          "CPV"
+        ],
+        "I": [
+          "FRA",
+          "NOR",
+          "SEN",
+          "IRQ"
+        ],
+        "J": [
+          "ARG",
+          "AUT",
+          "ALG",
+          "JOR"
+        ],
+        "K": [
+          "POR",
+          "COL",
+          "UZB",
+          "COD"
+        ],
+        "L": [
+          "GHA",
+          "ENG",
+          "PAN",
+          "CRO"
+        ]
+      },
+      "knockoutPicks": {
+        "73": "KOR",
+        "74": "GER",
+        "75": "MAR",
+        "76": "BRA",
+        "77": "FRA",
+        "78": "NOR",
+        "79": "MEX",
+        "80": "GHA",
+        "81": "USA",
+        "82": "BEL",
+        "83": "ENG",
+        "84": "ESP",
+        "85": "NZL",
+        "86": "ARG",
+        "87": "POR",
+        "88": "AUS",
+        "89": "FRA",
+        "90": "KOR",
+        "91": "BRA",
+        "92": "GHA",
+        "93": "ESP",
+        "94": "BEL",
+        "95": "ARG",
+        "96": "NZL",
+        "97": "FRA",
+        "98": "ESP",
+        "99": "BRA",
+        "100": "ARG",
+        "101": "ESP",
+        "102": "ARG",
+        "103": "FRA",
+        "104": "ESP"
+      }
+    },
+    "final_score_home": 3,
+    "final_score_away": 2,
+    "updated_at": "2026-06-15 23:45:31.319+00",
+    "submitted": true
+  },
+  {
+    "id": "c5eea901-771c-48ce-92e7-fbc019c1e651",
+    "user_id": "ae1927c0-b704-4326-8be4-5085c64bdc47",
+    "bracket_data": {
+      "bestThirds": [
+        "SCO",
+        "AUS",
+        "JPN",
+        "CPV",
+        "PAN",
+        "SEN",
+        "EGY",
+        "CIV"
+      ],
+      "groupPicks": {
+        "A": [
+          "MEX",
+          "KOR",
+          "RSA",
+          "CZE"
+        ],
+        "B": [
+          "CAN",
+          "SUI",
+          "QAT",
+          "BIH"
+        ],
+        "C": [
+          "BRA",
+          "MAR",
+          "SCO",
+          "HAI"
+        ],
+        "D": [
+          "USA",
+          "PAR",
+          "AUS",
+          "TUR"
+        ],
+        "E": [
+          "GER",
+          "ECU",
+          "CIV",
+          "CUW"
+        ],
+        "F": [
+          "SWE",
+          "NED",
+          "JPN",
+          "TUN"
+        ],
+        "G": [
+          "BEL",
+          "NZL",
+          "EGY",
+          "IRN"
+        ],
+        "H": [
+          "ESP",
+          "URU",
+          "CPV",
+          "KSA"
+        ],
+        "I": [
+          "FRA",
+          "NOR",
+          "SEN",
+          "IRQ"
+        ],
+        "J": [
+          "ARG",
+          "AUT",
+          "ALG",
+          "JOR"
+        ],
+        "K": [
+          "POR",
+          "COL",
+          "COD",
+          "UZB"
+        ],
+        "L": [
+          "ENG",
+          "CRO",
+          "PAN",
+          "GHA"
+        ]
+      },
+      "knockoutPicks": {
+        "73": "SUI",
+        "74": "GER",
+        "75": "MAR",
+        "76": "BRA",
+        "77": "FRA",
+        "78": "NOR",
+        "79": "MEX",
+        "80": "ENG",
+        "81": "USA",
+        "82": "BEL",
+        "83": "COL",
+        "84": "ESP",
+        "85": "CAN",
+        "86": "ARG",
+        "87": "POR",
+        "88": "NZL",
+        "89": "FRA",
+        "90": "MAR",
+        "91": "BRA",
+        "92": "ENG",
+        "93": "ESP",
+        "94": "USA",
+        "95": "ARG",
+        "96": "POR",
+        "97": "FRA",
+        "98": "USA",
+        "99": "ENG",
+        "100": "POR",
+        "101": "FRA",
+        "102": "POR",
+        "103": "USA",
+        "104": "POR"
+      }
+    },
+    "final_score_home": 1,
+    "final_score_away": 2,
+    "updated_at": "2026-06-15 23:39:49.716+00",
+    "submitted": true
+  },
+  {
+    "id": "6c4fee7c-b7d3-4e82-af27-0a6137c1816f",
+    "user_id": "7132b8ef-5ac5-4410-bb51-a556becb5a95",
+    "bracket_data": {
+      "bestThirds": [
+        "JOR",
+        "URU",
+        "PAR",
+        "RSA",
+        "PAN",
+        "SEN",
+        "SWE",
+        "HAI"
+      ],
+      "groupPicks": {
+        "A": [
+          "MEX",
+          "KOR",
+          "RSA",
+          "CZE"
+        ],
+        "B": [
+          "CAN",
+          "QAT",
+          "SUI",
+          "BIH"
+        ],
+        "C": [
+          "BRA",
+          "MAR",
+          "HAI",
+          "SCO"
+        ],
+        "D": [
+          "USA",
+          "TUR",
+          "PAR",
+          "AUS"
+        ],
+        "E": [
+          "GER",
+          "ECU",
+          "CIV",
+          "CUW"
+        ],
+        "F": [
+          "JPN",
+          "NED",
+          "SWE",
+          "TUN"
+        ],
+        "G": [
+          "BEL",
+          "EGY",
+          "NZL",
+          "IRN"
+        ],
+        "H": [
+          "ESP",
+          "KSA",
+          "URU",
+          "CPV"
+        ],
+        "I": [
+          "FRA",
+          "NOR",
+          "SEN",
+          "IRQ"
+        ],
+        "J": [
+          "ARG",
+          "ALG",
+          "JOR",
+          "AUT"
+        ],
+        "K": [
+          "COL",
+          "POR",
+          "UZB",
+          "COD"
+        ],
+        "L": [
+          "ENG",
+          "CRO",
+          "PAN",
+          "GHA"
+        ]
+      },
+      "knockoutPicks": {
+        "73": "KOR",
+        "74": "GER",
+        "75": "MAR",
+        "76": "BRA",
+        "77": "FRA",
+        "78": "NOR",
+        "79": "MEX",
+        "80": "ENG",
+        "81": "USA",
+        "82": "BEL",
+        "83": "POR",
+        "84": "ESP",
+        "85": "CAN",
+        "86": "ARG",
+        "87": "COL",
+        "88": "TUR",
+        "89": "FRA",
+        "90": "KOR",
+        "91": "BRA",
+        "92": "MEX",
+        "93": "ESP",
+        "94": "USA",
+        "95": "ARG",
+        "96": "COL",
+        "97": "FRA",
+        "98": "USA",
+        "99": "BRA",
+        "100": "COL",
+        "101": "USA",
+        "102": "BRA",
+        "104": "BRA"
+      }
+    },
+    "final_score_home": 1,
+    "final_score_away": 2,
+    "updated_at": "2026-06-15 23:27:55.897+00",
+    "submitted": true
+  },
+  {
+    "id": "4ce83440-2b39-4cb1-a87c-d363f12e9640",
+    "user_id": "80f94bdb-d698-4a43-b6f1-dc96bbdfa13d",
+    "bracket_data": {
+      "bestThirds": [
+        "BIH",
+        "MAR",
+        "PAR",
+        "IRN",
+        "ALG",
+        "PAN",
+        "RSA",
+        "SEN"
+      ],
+      "groupPicks": {
+        "A": [
+          "MEX",
+          "CZE",
+          "RSA",
+          "KOR"
+        ],
+        "B": [
+          "CAN",
+          "SUI",
+          "BIH",
+          "QAT"
+        ],
+        "C": [
+          "BRA",
+          "SCO",
+          "MAR",
+          "HAI"
+        ],
+        "D": [
+          "USA",
+          "TUR",
+          "PAR",
+          "AUS"
+        ],
+        "E": [
+          "GER",
+          "ECU",
+          "CUW",
+          "CIV"
+        ],
+        "F": [
+          "NED",
+          "JPN",
+          "TUN",
+          "SWE"
+        ],
+        "G": [
+          "BEL",
+          "EGY",
+          "IRN",
+          "NZL"
+        ],
+        "H": [
+          "ESP",
+          "URU",
+          "CPV",
+          "KSA"
+        ],
+        "I": [
+          "FRA",
+          "NOR",
+          "SEN",
+          "IRQ"
+        ],
+        "J": [
+          "ARG",
+          "AUT",
+          "ALG",
+          "JOR"
+        ],
+        "K": [
+          "POR",
+          "COL",
+          "UZB",
+          "COD"
+        ],
+        "L": [
+          "ENG",
+          "CRO",
+          "PAN",
+          "GHA"
+        ]
+      },
+      "knockoutPicks": {
+        "73": "CZE",
+        "74": "GER",
+        "75": "NED",
+        "76": "BRA",
+        "77": "FRA",
+        "78": "NOR",
+        "79": "MEX",
+        "80": "ENG",
+        "81": "USA",
+        "82": "BEL",
+        "83": "CRO",
+        "84": "ESP",
+        "85": "CAN",
+        "86": "ARG",
+        "87": "POR",
+        "88": "TUR",
+        "89": "FRA",
+        "90": "NED",
+        "91": "NOR",
+        "92": "ENG",
+        "93": "ESP",
+        "94": "USA",
+        "95": "ARG",
+        "96": "POR",
+        "97": "FRA",
+        "98": "ESP",
+        "99": "NOR",
+        "100": "ARG",
+        "101": "ESP",
+        "102": "NOR",
+        "103": "FRA",
+        "104": "ESP"
+      }
+    },
+    "final_score_home": 2,
+    "final_score_away": 0,
+    "updated_at": "2026-06-16 15:24:05.372+00",
+    "submitted": true
+  },
+  {
+    "id": "d5d76c5c-d050-4b1f-aba4-a059001ed8c2",
+    "user_id": "a073cad4-5508-452f-bd12-4bb25295b6ca",
+    "bracket_data": {
+      "bestThirds": [
+        "KOR",
+        "CIV",
+        "AUS",
+        "SWE",
+        "NZL",
+        "CRO",
+        "AUT",
+        "MAR"
+      ],
+      "groupPicks": {
+        "A": [
+          "MEX",
+          "RSA",
+          "KOR",
+          "CZE"
+        ],
+        "B": [
+          "SUI",
+          "CAN",
+          "QAT",
+          "BIH"
+        ],
+        "C": [
+          "BRA",
+          "SCO",
+          "MAR",
+          "HAI"
+        ],
+        "D": [
+          "USA",
+          "PAR",
+          "AUS",
+          "TUR"
+        ],
+        "E": [
+          "GER",
+          "ECU",
+          "CIV",
+          "CUW"
+        ],
+        "F": [
+          "JPN",
+          "NED",
+          "SWE",
+          "TUN"
+        ],
+        "G": [
+          "EGY",
+          "BEL",
+          "NZL",
+          "IRN"
+        ],
+        "H": [
+          "ESP",
+          "CPV",
+          "URU",
+          "KSA"
+        ],
+        "I": [
+          "FRA",
+          "NOR",
+          "SEN",
+          "IRQ"
+        ],
+        "J": [
+          "ARG",
+          "ALG",
+          "AUT",
+          "JOR"
+        ],
+        "K": [
+          "POR",
+          "COL",
+          "COD",
+          "UZB"
+        ],
+        "L": [
+          "ENG",
+          "PAN",
+          "CRO",
+          "GHA"
+        ]
+      },
+      "knockoutPicks": {
+        "73": "RSA",
+        "74": "GER",
+        "75": "JPN",
+        "77": "FRA",
+        "81": "USA",
+        "82": "EGY",
+        "83": "COL",
+        "84": "ESP",
+        "89": "GER",
+        "90": "JPN",
+        "93": "ESP",
+        "94": "USA",
+        "97": "JPN",
+        "98": "ESP",
+        "101": "ESP"
+      }
+    },
+    "final_score_home": 3,
+    "final_score_away": 1,
+    "updated_at": "2026-06-15 19:54:34.299+00",
+    "submitted": true
+  },
+  {
+    "id": "33339a36-fa7e-41e8-8b18-484910aca1ee",
+    "user_id": "f171b22b-840d-4aa0-b727-0d6d7f956651",
+    "bracket_data": {
+      "bestThirds": [
+        "SCO",
+        "SWE",
+        "NZL",
+        "GHA",
+        "NOR",
+        "CUW",
+        "RSA",
+        "QAT"
+      ],
+      "groupPicks": {
+        "A": [
+          "MEX",
+          "KOR",
+          "RSA",
+          "CZE"
+        ],
+        "B": [
+          "CAN",
+          "SUI",
+          "QAT",
+          "BIH"
+        ],
+        "C": [
+          "BRA",
+          "MAR",
+          "SCO",
+          "HAI"
+        ],
+        "D": [
+          "USA",
+          "AUS",
+          "TUR",
+          "PAR"
+        ],
+        "E": [
+          "GER",
+          "ECU",
+          "CUW",
+          "CIV"
+        ],
+        "F": [
+          "NED",
+          "JPN",
+          "SWE",
+          "TUN"
+        ],
+        "G": [
+          "BEL",
+          "EGY",
+          "NZL",
+          "IRN"
+        ],
+        "H": [
+          "ESP",
+          "URU",
+          "CPV",
+          "KSA"
+        ],
+        "I": [
+          "FRA",
+          "SEN",
+          "NOR",
+          "IRQ"
+        ],
+        "J": [
+          "ARG",
+          "ALG",
+          "AUT",
+          "JOR"
+        ],
+        "K": [
+          "POR",
+          "COL",
+          "UZB",
+          "COD"
+        ],
+        "L": [
+          "ENG",
+          "CRO",
+          "GHA",
+          "PAN"
+        ]
+      },
+      "knockoutPicks": {
+        "73": "KOR",
+        "74": "GER",
+        "75": "MAR",
+        "76": "BRA",
+        "77": "FRA",
+        "78": "ECU",
+        "79": "MEX",
+        "80": "ENG",
+        "81": "USA",
+        "82": "RSA",
+        "83": "COL",
+        "84": "ESP",
+        "85": "SWE",
+        "86": "ARG",
+        "87": "POR",
+        "88": "AUS",
+        "89": "FRA",
+        "90": "MAR",
+        "91": "BRA",
+        "92": "MEX",
+        "93": "ESP",
+        "94": "USA",
+        "95": "ARG",
+        "96": "POR",
+        "97": "FRA",
+        "98": "USA",
+        "99": "BRA",
+        "100": "ARG",
+        "101": "USA",
+        "102": "ARG",
+        "104": "USA"
+      }
+    },
+    "final_score_home": 2,
+    "final_score_away": 1,
+    "updated_at": "2026-06-20 02:15:13.292+00",
+    "submitted": false
+  }
+]
