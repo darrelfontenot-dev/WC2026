@@ -8,7 +8,7 @@ const GUESSES = [
   { name: 'Aunt MK',                       weight: '5 lbs 8 oz',  length: '12"',   datetime: '8/3/26 8:00 am',  hair: 'Hair',                           dt: new Date(2026, 7, 3,  8,  0) },
   { name: 'Gigi',                          weight: '6 lbs 2 oz',  length: '18½"',  datetime: '8/4/26 4:45 pm',  hair: 'Hair',                           dt: new Date(2026, 7, 4, 16, 45) },
   { name: 'Pop Pop',                       weight: '6 lbs 9 oz',  length: '17.5"', datetime: '8/4/26 5:30 pm',  hair: 'Lot of hair',                    dt: new Date(2026, 7, 4, 17, 30) },
-  { name: '(unnamed)',                     weight: '7 lbs 3 oz',  length: '18"',   datetime: '8/4/26 4:30 pm',  hair: 'Lots of hair',                   dt: new Date(2026, 7, 4, 16, 30) },
+  { name: 'Aunt Kim',                      weight: '7 lbs 3 oz',  length: '18"',   datetime: '8/4/26 4:30 pm',  hair: 'Lots of hair',                   dt: new Date(2026, 7, 4, 16, 30) },
   { name: "Margo's future favorite uncle", weight: '6 lbs 6 oz',  length: '19"',   datetime: '8/4/26 3:00 pm',  hair: 'Dark hair',                      dt: new Date(2026, 7, 4, 15,  0) },
   { name: 'Old Pawpaw',                    weight: '5 lbs 15 oz', length: '16"',   datetime: '—',               hair: 'Plenty of dark hair. Beautiful.', dt: null },
   { name: 'Collin',                        weight: '6 lbs 4 oz',  length: '13"',   datetime: '8/4/26 6:30 pm',  hair: 'Hair',                           dt: new Date(2026, 7, 4, 18, 30) },
