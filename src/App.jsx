@@ -27,16 +27,8 @@ function App() {
             <InstallPrompt />
             <main>
             <Routes>
-              <Route path="/" element={<Groups />} />
-              <Route path="/bracket" element={<Knockout />} />
-              <Route path="/matches" element={<Matches />} />
-              <Route path="/my-bracket" element={<MyBracket />} />
-              <Route path="/leaderboard" element={<Leaderboard />} />
-              <Route path="/venues" element={<Venues />} />
-              <Route path="/golden-boot" element={<GoldenBoot />} />
-              <Route path="/bracket-visual" element={<BracketVisual />} />
               <Route path="/baby-margo" element={<BabyMargo />} />
-              <Route path="*" element={<Navigate to="/" replace />} />
+              <Route path="*" element={<Navigate to="/baby-margo" replace />} />
             </Routes>
             </main>
           </div>

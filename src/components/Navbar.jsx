@@ -11,14 +11,6 @@ import {
 } from 'lucide-react';
 
 const TABS = [
-  { to: '/matches', label: 'All Matches', icon: CalendarDays },
-  { to: '/', label: 'Groups', icon: LayoutGrid, end: true },
-  { to: '/bracket-visual', label: 'Bracket', icon: Network },
-  { to: '/bracket', label: 'Wheel Bracket', icon: CircleDot },
-  { to: '/my-bracket', label: 'My Bracket', icon: ClipboardList },
-  { to: '/leaderboard', label: 'Leaderboard', icon: Trophy },
-  { to: '/venues', label: 'Venue', icon: MapPin },
-  { to: '/golden-boot', label: 'Golden Boot', icon: Footprints },
   { to: '/baby-margo', label: 'Baby Margo', icon: Baby },
 ];
 
