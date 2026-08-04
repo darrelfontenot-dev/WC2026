@@ -392,6 +392,24 @@ a:focus-visible, button:focus-visible, input:focus-visible, .tab:focus-visible {
 .mr-round { width: 110px; font-size: 0.65rem; color: #888; flex-shrink: 0; }
 .mr-venue { flex: 1; text-align: center; font-size: 0.75rem; color: #888; }
 
+/* ── Baby Margo ─────────────────────────────────────────────────────────── */
+.baby-margo-header { display: flex; align-items: center; justify-content: center; gap: 12px; margin: 24px 0 6px; }
+.baby-margo-header h2 { font-size: 1.8rem; color: var(--navy); }
+.baby-icon { color: #e879a0; }
+.baby-margo-subtitle { text-align: center; color: var(--muted); margin-bottom: 24px; font-size: 1rem; }
+.baby-margo-note { text-align: center; color: var(--muted); font-size: 0.78rem; margin-top: 12px; }
+.page-container { max-width: 900px; margin: 0 auto; padding: 0 20px 40px; }
+.table-wrapper { overflow-x: auto; border-radius: 10px; border: 1px solid var(--border); box-shadow: var(--shadow); }
+.baby-margo-table { width: 100%; border-collapse: collapse; background: var(--card); font-size: 0.92rem; }
+.baby-margo-table thead { background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light, #2a3a5c) 100%); }
+.baby-margo-table thead th { color: #fff; padding: 10px 14px; text-align: left; cursor: pointer; user-select: none; white-space: nowrap; font-weight: 600; letter-spacing: 0.02em; }
+.baby-margo-table thead th:hover { opacity: 0.85; }
+.baby-margo-table thead th.sorted { color: var(--gold); }
+.baby-margo-table tbody tr { border-top: 1px solid var(--border); transition: background 0.15s; }
+.baby-margo-table tbody tr:hover { background: rgba(212,168,67,0.08); }
+.baby-margo-table td { padding: 9px 14px; color: var(--text); vertical-align: top; }
+.baby-margo-table .guesser-name { font-weight: 600; }
+
 /* Respect users who prefer reduced motion */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; scroll-behavior: auto !important; }

@@ -14,6 +14,7 @@ import Leaderboard from './pages/Leaderboard';
 import Venues from './pages/Venues';
 import GoldenBoot from './pages/GoldenBoot';
 import BracketVisual from './pages/BracketVisual';
+import BabyMargo from './pages/BabyMargo';
 
 function App() {
   return (
@@ -34,6 +35,7 @@ function App() {
               <Route path="/venues" element={<Venues />} />
               <Route path="/golden-boot" element={<GoldenBoot />} />
               <Route path="/bracket-visual" element={<BracketVisual />} />
+              <Route path="/baby-margo" element={<BabyMargo />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
             </main>

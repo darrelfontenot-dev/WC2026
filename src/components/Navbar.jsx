@@ -7,7 +7,7 @@ import AuthModal from './AuthModal';
 import {
   LogIn, LogOut, Moon, Sun,
   CalendarDays, LayoutGrid, Network, CircleDot,
-  ClipboardList, Trophy, MapPin, Footprints,
+  ClipboardList, Trophy, MapPin, Footprints, Baby,
 } from 'lucide-react';
 
 const TABS = [
@@ -19,6 +19,7 @@ const TABS = [
   { to: '/leaderboard', label: 'Leaderboard', icon: Trophy },
   { to: '/venues', label: 'Venue', icon: MapPin },
   { to: '/golden-boot', label: 'Golden Boot', icon: Footprints },
+  { to: '/baby-margo', label: 'Baby Margo', icon: Baby },
 ];
 
 export default function Navbar() {
